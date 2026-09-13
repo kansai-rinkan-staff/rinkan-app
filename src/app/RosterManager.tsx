@@ -738,8 +738,8 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                 {/* Individual Edit Section */}
                 <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-bold text-slate-800 text-lg">参加者リスト（個別編集）</h3>
-                    <div className="text-sm font-bold text-slate-500">{participants.length}名</div>
+                    <h3 className="font-bold text-slate-800 text-lg">参加者リスト</h3>
+                    <div className="text-sm font-bold text-slate-500">{participants.filter(p => p.type === rosterTab).length}名</div>
                   </div>
                   
                   {/* Duplicates Alert */}
@@ -766,6 +766,19 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                     </div>
                   )}
 
+                  
+                  {/* Roster Tabs */}
+                  <div className="flex gap-2 mb-4 bg-slate-100 p-1 rounded-xl w-fit">
+                    <button 
+                      onClick={() => setRosterTab('student')} 
+                      className={cn("px-4 py-2 rounded-lg font-bold text-sm transition-all", rosterTab === 'student' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                    >学生部</button>
+                    <button 
+                      onClick={() => setRosterTab('youth')} 
+                      className={cn("px-4 py-2 rounded-lg font-bold text-sm transition-all", rosterTab === 'youth' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700")}
+                    >青年部・一般</button>
+                  </div>
+
                   {/* Search and Table */}
                   <div className="mb-4 flex gap-2">
                     <input 
@@ -785,7 +798,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                           <th className="p-4 font-bold border-b border-slate-200">氏名</th>
                           <th className="p-4 font-bold border-b border-slate-200">所属</th>
                           <th className="p-4 font-bold border-b border-slate-200">学年/性別</th>
-                          
+                          {role !== 'viewer' && <th className="p-4 font-bold border-b border-slate-200 text-right">操作</th>}
                         </tr>
                       </thead>
                       <tbody>

@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use client";
 
 import { useEffect, useState, use } from 'react';
@@ -40,7 +39,7 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
     try {
       const res = await registerWithToken(token, username, password, name);
       if (res.success) {
-        toast.success('アカウントが作�Eされました�E�ログインしてください');
+        toast.success('アカウントが作成されました！ログインしてください');
         router.push('/login');
       } else {
         toast.error(res.error || '登録に失敗しました');
@@ -63,10 +62,11 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
           <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <X size={32} />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 mb-2">リンクが無効でぁE/h2>
-          <p className="text-sm text-slate-500 mb-6">こ�E招征E��ンクは無効か、期限が刁E��てぁE��す。管琁E��E��もう一度リンクを発行してもらってください、E/p>
+          <h2 className="text-xl font-bold text-slate-800 mb-2">リンクが無効です</h2>
+          <p className="text-sm text-slate-500 mb-6">この招待リンクは無効か、期限が切れています。管理者にもう一度リンクを発行してもらってください。</p>
           <button onClick={() => router.push('/login')} className="bg-slate-100 text-slate-700 font-bold w-full py-3 rounded-xl hover:bg-slate-200 transition-colors">
-            ログイン画面へ戻めE          </button>
+            ログイン画面へ戻る
+          </button>
         </div>
       </div>
     );
@@ -86,41 +86,41 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
         
         <div className="text-center mb-8">
           <h1 className="text-2xl font-black text-slate-800 tracking-wider">
-            {role === 'admin' ? '全体管琁E��E登録' : '編雁E��E登録'}
+            {role === 'admin' ? '全体管理者 登録' : '編集者 登録'}
           </h1>
           <p className="text-slate-500 text-sm mt-2 font-medium">関西林間学校アプリ</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">お名剁E(表示吁E</label>
+            <label className="block text-sm font-bold text-slate-700 mb-1">お名前 (表示名)</label>
             <input 
               name="name" 
               type="text" 
               required 
-              placeholder="侁E 山田太郁E 
+              placeholder="例: 山田太郎" 
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">ログインID (半角英数孁E</label>
+            <label className="block text-sm font-bold text-slate-700 mb-1">ログインID (半角英数字)</label>
             <input 
               name="username" 
               type="text" 
               pattern="[a-zA-Z0-9]+"
-              title="半角英数字�Eみ"
+              title="半角英数字のみ"
               required 
               placeholder="ID" 
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">パスワーチE/label>
+            <label className="block text-sm font-bold text-slate-700 mb-1">パスワード</label>
             <input 
               name="password" 
               type="password" 
               required 
-              placeholder="パスワーチE 
+              placeholder="パスワード" 
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
             />
           </div>
@@ -130,11 +130,10 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
             disabled={loading}
             className="w-full bg-blue-600 disabled:bg-blue-400 text-white font-bold rounded-xl py-3.5 mt-2 transition-colors hover:bg-blue-700 shadow-md shadow-blue-200 flex items-center justify-center gap-2"
           >
-            {loading ? '登録中...' : 'アカウントを作�Eしてログイン'}
+            {loading ? '登録中...' : 'アカウントを作成してログイン'}
           </button>
         </form>
       </div>
     </div>
   );
 }
-

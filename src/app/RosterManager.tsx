@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -83,7 +82,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
   const duplicates = getDuplicates();
 
   const handleMergeDuplicates = (group: Participant[]) => {
-    if(confirm(`${group[0].name} ぁE${group.length} 件重褁E��てぁE��す、E件に統合しますか�E�`)) {
+    if(confirm(`${group[0].name} が ${group.length} 件重複しています。1件に統合しますか？`)) {
       const primary = group[0];
       const mergedAllocations = {};
       group.forEach(p => {
@@ -94,7 +93,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
       const newParticipants = participants.filter(p => !idsToRemove.includes(p.id));
       const finalParticipants = newParticipants.map(p => p.id === primary.id ? primary : p);
       updateParticipants(finalParticipants);
-      toast.success('重褁E��統合しました');
+      toast.success('重複を統合しました');
     }
   };
 
@@ -113,7 +112,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
         const newParticipants: Participant[] = json.map((row, idx) => ({
           id: `${pType}_${Date.now()}_${idx}`,
           type: pType,
-          name: row['参加老E��名'] || row['氏名'] || '無吁E,
+          name: row['参加者氏名'] || row['氏名'] || '無名',
           gender: row['性別'] || '-',
           grade: row['学年'] || '-',
           raw: row,
@@ -131,7 +130,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
         };
         setData(newData);
         saveAppData(newData);
-        toast.success(`${pType === 'student' ? '学生部' : '青年部'}のチE�EタめE{newParticipants.length}件取り込みました`);
+        toast.success(`${pType === 'student' ? '学生部' : '青年部'}のデータを${newParticipants.length}件取り込みました`);
       } catch (err) {
         toast.error('Excelの読み込みに失敗しました');
         console.error(err);
@@ -142,7 +141,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
 
   const exportCurrentModeExcel = () => {
     if (participants.length === 0) {
-      toast.error('エクスポ�Eトするデータがありません');
+      toast.error('エクスポートするデータがありません');
       return;
     }
     
@@ -164,15 +163,15 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
     let sheetName = "";
     
     if (mode === 'life') {
-      sheetName = "班編戁E;
+      sheetName = "班編成";
       exportData = participants.filter(p => p.allocations.group).map(p => ({
-        '区刁E: p.type === 'student' ? '学生部' : '青年部・一般',
+        '区分': p.type === 'student' ? '学生部' : '青年部・一般',
         '氏名': p.name,
         '性別': p.gender,
         '学年': p.grade,
         '班': getName(lifeGroups, p.allocations.group),
-        '役職': p.allocations.groupRole === 'scarf' ? 'スカーチE : p.allocations.groupRole === 'leader' ? '班長' : '',
-        'アレルギー・備老E: p.raw['備老E��E] || p.raw['備老E] || ''
+        '役職': p.allocations.groupRole === 'scarf' ? 'スカーフ' : p.allocations.groupRole === 'leader' ? '班長' : '',
+        'アレルギー・備考': p.raw['備考欄'] || p.raw['備考'] || ''
       })).sort((a, b) => String(a['班'] || '').localeCompare(String(b['班'] || '')));
     } else if (mode === 'study') {
       sheetName = "勉強会班";
@@ -187,15 +186,15 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
       exportData = participants.filter(p => p.allocations.room).map(p => ({
         '氏名': p.name,
         '性別': p.gender,
-        '部屁E: getName(rooms, p.allocations.room),
+        '部屋': getName(rooms, p.allocations.room),
         '役職': p.allocations.roomRole === 'room_leader' ? '室長' : ''
-      })).sort((a, b) => String(a['部屁E] || '').localeCompare(String(b['部屁E] || '')));
+      })).sort((a, b) => String(a['部屋'] || '').localeCompare(String(b['部屋'] || '')));
     } else if (mode === 'car') {
-      sheetName = "配軁E;
+      sheetName = "配車";
       exportData = participants.filter(p => p.allocations.car).map(p => ({
         '氏名': p.name,
-        '軁E: getName(cars, p.allocations.car)
-      })).sort((a, b) => String(a['軁E] || '').localeCompare(String(b['軁E] || '')));
+        '車': getName(cars, p.allocations.car)
+      })).sort((a, b) => String(a['車'] || '').localeCompare(String(b['車'] || '')));
     } else if (mode === 'youthRole') {
       sheetName = "青年部役割";
       exportData = participants.filter(p => p.type === 'youth' && p.allocations.youthRole).map(p => ({
@@ -211,7 +210,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
     }
 
     if (exportData.length === 0) {
-      toast.error('エクスポ�Eトするデータがありません�E�誰も�E属されてぁE��せん�E�E);
+      toast.error('エクスポートするデータがありません（誰も配属されていません）');
       return;
     }
     
@@ -223,7 +222,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
 
   const exportTemplateExcel = (onlyAllergy: boolean) => {
     if (participants.length === 0) {
-      toast.error('エクスポ�Eトするデータがありません');
+      toast.error('エクスポートするデータがありません');
       return;
     }
     
@@ -235,27 +234,27 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
     let targetParticipants = participants;
     if (onlyAllergy) {
       targetParticipants = participants.filter(p => {
-        const note = String(p.raw['備老E��E] || p.raw['備老E] || '');
+        const note = String(p.raw['備考欄'] || p.raw['備考'] || '');
         return note.trim().length > 0;
       });
     }
 
     const exportData = targetParticipants.map((p, idx) => ({
       'No.': idx + 1,
-      'ふりがな': p.raw['参加老E��名�E�フリガナ！E] || p.raw['氏名�E�フリガナ！E] || '',
+      'ふりがな': p.raw['参加者氏名（フリガナ）'] || p.raw['氏名（フリガナ）'] || '',
       '氏名': p.name,
       '性別': p.gender,
       '学年/年齢': p.grade,
-      '所属（支部�E�E: p.raw['所属系統・支部吁E] || '',
+      '所属（支部）': p.raw['所属系統・支部名'] || '',
       '班': getName(lifeGroups, p.allocations.group),
-      '部屁E: getName(rooms, p.allocations.room),
-      'アレルギー・特記事頁E: p.raw['備老E��E] || p.raw['備老E] || ''
+      '部屋': getName(rooms, p.allocations.room),
+      'アレルギー・特記事項': p.raw['備考欄'] || p.raw['備考'] || ''
     }));
     
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "利用老E��簿");
-    XLSX.writeFile(wb, `佛所護念会_利用老E��簿${onlyAllergy ? '_アレルギー筁E : ''}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, "利用者名簿");
+    XLSX.writeFile(wb, `佛所護念会_利用者名簿${onlyAllergy ? '_アレルギー等' : ''}.xlsx`);
   };
 
   // Drag and Drop Engine
@@ -338,7 +337,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
       const bRooms = (facilitiesData as any)[b];
       if (bRooms) {
         bRooms.forEach((r: any) => {
-          // r.floor might be mojibake or real text (e.g. "1隁E), we just show it safely
+          // r.floor might be mojibake or real text (e.g. "1階"), we just show it safely
           const floorStr = r.floor ? `${r.floor.replace(/[^0-9]/g, '')}階` : '';
           rooms.push({ id: `room_${b}_${r.name}`, name: `${b} ${floorStr} - ${r.name}`, capacity: r.capacity });
         });
@@ -365,8 +364,8 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
           onDrop={(e) => handleDrop(e, 'unassigned', allocationKey)}
         >
           <div className="font-bold text-slate-700 mb-3 flex justify-between items-center">
-            <span className="text-sm uppercase tracking-wider">未配属リスチE/span>
-            <span className="bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full text-xs font-bold">{unassigned.length}吁E/span>
+            <span className="text-sm uppercase tracking-wider">未配属リスト</span>
+            <span className="bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full text-xs font-bold">{unassigned.length}名</span>
           </div>
           <div className="flex-1 overflow-y-auto space-y-2 pr-2 hide-scrollbar">
             {unassigned.map(p => (
@@ -378,11 +377,11 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
               >
                 <div>
                   <div className="font-bold text-slate-800 text-sm">{p.name}</div>
-                  <div className="text-[10px] text-slate-400 font-medium">{p.gender} / {p.grade} / {p.type === 'student' ? '学甁E : '青年'}</div>
+                  <div className="text-[10px] text-slate-400 font-medium">{p.gender} / {p.grade} / {p.type === 'student' ? '学生' : '青年'}</div>
                 </div>
               </div>
             ))}
-            {unassigned.length === 0 && <div className="text-slate-400 text-xs text-center pt-8">全員配属済みでぁE/div>}
+            {unassigned.length === 0 && <div className="text-slate-400 text-xs text-center pt-8">全員配属済みです</div>}
           </div>
         </div>
 
@@ -410,9 +409,9 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                   {bucket.name}
                 </div>
                 <div className="text-xs text-slate-500 mb-4 flex justify-between items-center border-b border-slate-100 pb-2 font-medium">
-                  <span>{assigned.length}吁E/span>
+                  <span>{assigned.length}名</span>
                   {bucket.capacity && (
-                    <span className={cn(isOverCapacity ? "text-red-600 font-bold bg-red-100 px-2 py-0.5 rounded" : "")}>定員: {bucket.capacity}吁E/span>
+                    <span className={cn(isOverCapacity ? "text-red-600 font-bold bg-red-100 px-2 py-0.5 rounded" : "")}>定員: {bucket.capacity}名</span>
                   )}
                 </div>
                 
@@ -432,7 +431,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                       {/* Role Toggles */}
                       {allowRoleToggles === 'life' && role === 'admin' && isEditing && (
                         <div className="mt-2 flex gap-1">
-                          <button onClick={() => toggleRole(p.id, 'groupRole', 'scarf')} className={cn("text-[10px] px-2 py-1 rounded-md border transition-colors font-bold", p.allocations.groupRole === 'scarf' ? "bg-blue-500 border-blue-600 text-white shadow-inner" : "bg-white border-slate-200 text-slate-500 hover:bg-slate-100")}>スカーチE/button>
+                          <button onClick={() => toggleRole(p.id, 'groupRole', 'scarf')} className={cn("text-[10px] px-2 py-1 rounded-md border transition-colors font-bold", p.allocations.groupRole === 'scarf' ? "bg-blue-500 border-blue-600 text-white shadow-inner" : "bg-white border-slate-200 text-slate-500 hover:bg-slate-100")}>スカーフ</button>
                           <button onClick={() => toggleRole(p.id, 'groupRole', 'leader')} className={cn("text-[10px] px-2 py-1 rounded-md border transition-colors font-bold", p.allocations.groupRole === 'leader' ? "bg-amber-500 border-amber-600 text-white shadow-inner" : "bg-white border-slate-200 text-slate-500 hover:bg-slate-100")}>班長</button>
                         </div>
                       )}
@@ -444,12 +443,12 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                       )}
                       
                       {/* Readonly badges */}
-                      {(!isEditing || role !== 'admin') && p.allocations.groupRole === 'scarf' && <div className="mt-1.5 text-[10px] font-bold text-white bg-blue-500 inline-block px-2 py-0.5 rounded-md">スカーチE/div>}
+                      {(!isEditing || role !== 'admin') && p.allocations.groupRole === 'scarf' && <div className="mt-1.5 text-[10px] font-bold text-white bg-blue-500 inline-block px-2 py-0.5 rounded-md">スカーフ</div>}
                       {(!isEditing || role !== 'admin') && p.allocations.groupRole === 'leader' && <div className="mt-1.5 text-[10px] font-bold text-white bg-amber-500 inline-block px-2 py-0.5 rounded-md">班長</div>}
                       {(!isEditing || role !== 'admin') && p.allocations.roomRole === 'room_leader' && <div className="mt-1.5 text-[10px] font-bold text-white bg-purple-500 inline-block px-2 py-0.5 rounded-md">室長</div>}
                     </div>
                   ))}
-                  {assigned.length === 0 && <div className="text-slate-400 text-xs text-center pt-4">ドラチE��して追加</div>}
+                  {assigned.length === 0 && <div className="text-slate-400 text-xs text-center pt-4">ドラッグして追加</div>}
                 </div>
               </div>
             );
@@ -494,7 +493,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
     if (mode === 'life') return '班';
     if (mode === 'study') return '勉強会班';
     if (mode === 'room') return '部屋割';
-    if (mode === 'car') return '配軁E;
+    if (mode === 'car') return '配車';
     if (mode === 'youthRole') return '青年部役割';
     if (mode === 'studentRole') return '学生部役割';
     return '';
@@ -502,10 +501,10 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
 
   const renderTabs = () => {
     const modes = category === 'roster'
-      ? [{id: 'dashboard', label: 'ダチE��ュボ�EチE}, {id: 'manage', label: '名簿管琁E}, {id: 'export', label: '出力�E絞り込み'}]
+      ? [{id: 'dashboard', label: 'ダッシュボード'}, {id: 'manage', label: '名簿管理'}, {id: 'export', label: '出力・絞り込み'}]
       : category === 'groups' 
       ? [{id: 'life', label: '班'}, {id: 'study', label: '勉強会班'}, {id: 'room', label: '部屋割'}]
-      : [{id: 'car', label: '配軁E}, {id: 'youthRole', label: '青年部役割'}, {id: 'studentRole', label: '学生部役割'}];
+      : [{id: 'car', label: '配車'}, {id: 'youthRole', label: '青年部役割'}, {id: 'studentRole', label: '学生部役割'}];
 
     return (
       <div className="flex gap-2 pb-4 pt-2 -mx-2 px-2 overflow-x-auto hide-scrollbar">
@@ -514,7 +513,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
             key={m.id}
             onClick={() => {
               if (isEditing) {
-                if(confirm('編雁E��の冁E��は破棁E��れます。よろしぁE��すか�E�E)) {
+                if(confirm('編集中の内容は破棄されます。よろしいですか？')) {
                   setIsEditing(false);
                   setLocalData(data);
                   setMode(m.id as Mode);
@@ -550,18 +549,21 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
           <div className="flex justify-end items-center gap-2 pb-3 mt-1">
             {role !== 'viewer' && role !== 'none' && (
               <button onClick={exportCurrentModeExcel} className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors shadow-sm mr-auto">
-                <Download size={16}/> {getModeLabel()} エクセル出劁E              </button>
+                <Download size={16}/> {getModeLabel()} エクセル出力
+              </button>
             )}
             
             {role === 'admin' && (
               <>
                 {!isEditing ? (
                   <button onClick={() => setIsEditing(true)} className="bg-white border-2 border-blue-600 text-blue-600 px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-blue-50 transition-colors shadow-sm">
-                    <Edit2 size={16}/> 編雁E                  </button>
+                    <Edit2 size={16}/> 編集
+                  </button>
                 ) : (
                   <>
                     <button onClick={handleSave} className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm">
-                      <Save size={16}/> 保孁E                    </button>
+                      <Save size={16}/> 保存
+                    </button>
                     <button onClick={() => {setIsEditing(false); setLocalData(data);}} className="bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-300 transition-colors">
                       キャンセル
                     </button>
@@ -579,14 +581,14 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
           <div className="space-y-6 flex-1">
             {mode === 'dashboard' && (
               <div className="space-y-6">
-                <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2"><Users size={20} className="text-blue-600"/> 参加老E��チE��ュボ�EチE/h3>
+                <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2"><Users size={20} className="text-blue-600"/> 参加者ダッシュボード</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-center items-center">
                     <div className="text-slate-500 font-bold mb-2">総参加人数</div>
                     <div className="text-5xl font-black text-blue-600">{participants.length} <span className="text-lg text-slate-400">人</span></div>
                   </div>
                   <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <div className="text-slate-500 font-bold mb-4 text-center">所属別 冁E��</div>
+                    <div className="text-slate-500 font-bold mb-4 text-center">所属別 内訳</div>
                     <div className="flex justify-between items-center px-4">
                       <div className="text-center">
                         <div className="text-3xl font-black text-emerald-600">{participants.filter(p => p.type === 'student').length}</div>
@@ -600,7 +602,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                     </div>
                   </div>
                   <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <div className="text-slate-500 font-bold mb-4 text-center">男女毁E(全佁E</div>
+                    <div className="text-slate-500 font-bold mb-4 text-center">男女比 (全体)</div>
                     <div className="flex justify-between items-center px-4">
                       <div className="text-center">
                         <div className="text-3xl font-black text-blue-500">{participants.filter(p => p.gender === '男').length}</div>
@@ -617,15 +619,15 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                 
                 {participants.filter(p => p.type === 'student').length > 0 && (
                   <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <h4 className="font-bold text-slate-700 mb-4">学生部 学年別 冁E��</h4>
+                    <h4 className="font-bold text-slate-700 mb-4">学生部 学年別 内訳</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {['封E, '中', '髁E, '大'].map(gradePrefix => {
+                      {['小', '中', '高', '大'].map(gradePrefix => {
                         const count = participants.filter(p => p.type === 'student' && p.grade.startsWith(gradePrefix)).length;
                         const male = participants.filter(p => p.type === 'student' && p.grade.startsWith(gradePrefix) && p.gender === '男').length;
                         const female = participants.filter(p => p.type === 'student' && p.grade.startsWith(gradePrefix) && p.gender === '女').length;
                         return (
                           <div key={gradePrefix} className="bg-slate-50 rounded-2xl p-4 text-center border border-slate-100">
-                            <div className="font-bold text-slate-600 mb-2">{gradePrefix}学甁E/div>
+                            <div className="font-bold text-slate-600 mb-2">{gradePrefix}学生</div>
                             <div className="text-2xl font-black text-slate-800 mb-2">{count} <span className="text-xs text-slate-400 font-bold">人</span></div>
                             <div className="flex justify-center gap-3 text-xs font-bold">
                               <span className="text-blue-500">男 {male}</span>
@@ -659,9 +661,11 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mb-4 font-medium leading-relaxed">
-                        ExcelファイルをアチE�Eロードすると、既存�E学生部チE�Eタは<span className="text-red-500 font-bold">上書ぁE/span>されます、Ebr/>忁E��最新のファイルを取り込んでください、E                      </p>
+                        Excelファイルをアップロードすると、既存の学生部データは<span className="text-red-500 font-bold">上書き</span>されます。<br/>必ず最新のファイルを取り込んでください。
+                      </p>
                       <label className="flex items-center justify-center w-full h-16 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl cursor-pointer transition-colors shadow-md shadow-emerald-200">
-                        <Upload size={18} className="mr-2"/> ファイルを選抁E                        <input type="file" accept=".xlsx, .xls" className="hidden" onChange={(e) => handleFileUpload(e, 'student')} />
+                        <Upload size={18} className="mr-2"/> ファイルを選択
+                        <input type="file" accept=".xlsx, .xls" className="hidden" onChange={(e) => handleFileUpload(e, 'student')} />
                       </label>
                     </div>
                     
@@ -679,9 +683,11 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mb-4 font-medium leading-relaxed">
-                        ExcelファイルをアチE�Eロードすると、既存�E青年部・一般チE�Eタは<span className="text-red-500 font-bold">上書ぁE/span>されます、Ebr/>忁E��最新のファイルを取り込んでください、E                      </p>
+                        Excelファイルをアップロードすると、既存の青年部・一般データは<span className="text-red-500 font-bold">上書き</span>されます。<br/>必ず最新のファイルを取り込んでください。
+                      </p>
                       <label className="flex items-center justify-center w-full h-16 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl cursor-pointer transition-colors shadow-md shadow-amber-200">
-                        <Upload size={18} className="mr-2"/> ファイルを選抁E                        <input type="file" accept=".xlsx, .xls" className="hidden" onChange={(e) => handleFileUpload(e, 'youth')} />
+                        <Upload size={18} className="mr-2"/> ファイルを選択
+                        <input type="file" accept=".xlsx, .xls" className="hidden" onChange={(e) => handleFileUpload(e, 'youth')} />
                       </label>
                     </div>
                   </div>
@@ -690,26 +696,27 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                 {/* Individual Edit Section */}
                 <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="font-bold text-slate-800 text-lg">参加老E��スト（個別編雁E��E/h3>
-                    <div className="text-sm font-bold text-slate-500">{participants.length}吁E/div>
+                    <h3 className="font-bold text-slate-800 text-lg">参加者リスト（個別編集）</h3>
+                    <div className="text-sm font-bold text-slate-500">{participants.length}名</div>
                   </div>
                   
                   {/* Duplicates Alert */}
                   {duplicates.length > 0 && (
                     <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-2xl">
                       <h4 className="font-bold text-rose-700 flex items-center gap-2 mb-3">
-                        <AlertCircle size={18}/> {duplicates.length}件の重褁E��ータが検�Eされました
+                        <AlertCircle size={18}/> {duplicates.length}件の重複データが検出されました
                       </h4>
                       <div className="space-y-2">
                         {duplicates.map((group, idx) => (
                           <div key={idx} className="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm border border-rose-100">
                             <div>
                               <span className="font-bold text-slate-800">{group[0].name}</span>
-                              <span className="text-xs text-slate-500 ml-2">({group.length}件のチE�Eタ)</span>
+                              <span className="text-xs text-slate-500 ml-2">({group.length}件のデータ)</span>
                             </div>
                             {role === 'admin' && (
                             <button onClick={() => handleMergeDuplicates(group)} className="text-sm font-bold bg-rose-100 hover:bg-rose-200 text-rose-700 px-4 py-2 rounded-lg transition-colors">
-                              統合すめE                            </button>
+                              統合する
+                            </button>
                             )}
                           </div>
                         ))}
@@ -727,7 +734,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                       className="flex-1 p-3 rounded-xl border border-slate-200 outline-none focus:border-blue-500 transition-colors"
                     />
                     {role === 'admin' && (
-                    <button onClick={() => setEditingParticipant({id: 'new_'+Date.now(), type: 'student', name: '', gender: '男', grade: '封E', raw: {}, allocations: {}})} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl flex items-center gap-2 transition-colors">
+                    <button onClick={() => setEditingParticipant({id: 'new_'+Date.now(), type: 'student', name: '', gender: '男', grade: '小1', raw: {}, allocations: {}})} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl flex items-center gap-2 transition-colors">
                       <Plus size={18}/> 新規追加
                     </button>
                     )}
@@ -738,9 +745,9 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                       <thead>
                         <tr className="bg-slate-50 text-slate-500 text-sm">
                           <th className="p-4 font-bold border-b border-slate-200">氏名</th>
-                          <th className="p-4 font-bold border-b border-slate-200">所屁E/th>
+                          <th className="p-4 font-bold border-b border-slate-200">所属</th>
                           <th className="p-4 font-bold border-b border-slate-200">学年/性別</th>
-                          {role === 'admin' && <th className="p-4 font-bold border-b border-slate-200 w-24">操佁E/th>}
+                          {role === 'admin' && <th className="p-4 font-bold border-b border-slate-200 w-24">操作</th>}
                         </tr>
                       </thead>
                       <tbody>
@@ -758,7 +765,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                               <div className="flex gap-2">
                                 <button onClick={() => setEditingParticipant(p)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit2 size={16}/></button>
                                 <button onClick={() => {
-                                  if(confirm(p.name + ' を削除しますか�E�E)) {
+                                  if(confirm(p.name + ' を削除しますか？')) {
                                     updateParticipants(participants.filter(x => x.id !== p.id));
                                   }
                                 }} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={16}/></button>
@@ -769,7 +776,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                         ))}
                         {participants.filter(p => p.name.includes(searchQuery)).length === 0 && (
                           <tr>
-                            <td colSpan={role === 'admin' ? 4 : 3} className="p-8 text-center text-slate-500 font-bold">該当する参加老E��見つかりません</td>
+                            <td colSpan={role === 'admin' ? 4 : 3} className="p-8 text-center text-slate-500 font-bold">該当する参加者が見つかりません</td>
                           </tr>
                         )}
                       </tbody>
@@ -781,7 +788,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
             
             {mode === 'export' && (
               <div className="space-y-6">
-                <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2"><Download size={20} className="text-blue-600"/> 出力�E絞り込み</h3>
+                <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2"><Download size={20} className="text-blue-600"/> 出力・絞り込み</h3>
                 {role !== 'viewer' && role !== 'none' ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button onClick={() => exportTemplateExcel(false)} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:border-blue-300 transition-all group text-left">
@@ -789,19 +796,20 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                         <Download size={24}/>
                       </div>
                       <h4 className="font-bold text-slate-800 mb-1">佛所護念会名簿 (全件)</h4>
-                      <p className="text-xs text-slate-500">持E���Eフォーマットで全参加老E�E名簿を�E力します、E/p>
+                      <p className="text-xs text-slate-500">指定のフォーマットで全参加者の名簿を出力します。</p>
                     </button>
                     <button onClick={() => exportTemplateExcel(true)} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:border-amber-300 transition-all group text-left">
                       <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <AlertCircle size={24}/>
                       </div>
-                      <h4 className="font-bold text-slate-800 mb-1">アレルギー対象老E絞り込み</h4>
-                      <p className="text-xs text-slate-500">備老E��E��アレルギー記載がある参加老E�Eみを抽出して出力します、E/p>
+                      <h4 className="font-bold text-slate-800 mb-1">アレルギー対象者 絞り込み</h4>
+                      <p className="text-xs text-slate-500">備考欄にアレルギー記載がある参加者のみを抽出して出力します。</p>
                     </button>
                   </div>
                 ) : (
                   <div className="bg-slate-50 p-6 rounded-3xl border border-slate-200 text-center text-slate-500 font-bold">
-                    閲覧老E��限ではチE�Eタのエクスポ�Eト�Eできません、E                  </div>
+                    閲覧者権限ではデータのエクスポートはできません。
+                  </div>
                 )}
               </div>
             )}
@@ -822,7 +830,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                   if (current.length > 1) {
                     updateLocal({...d, lifeGroups: current.slice(0, current.length - 1)});
                   }
-                }} className="bg-slate-100 hover:bg-red-100 hover:text-red-700 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors"><Trash2 size={16}/> 1班減らぁE/button>
+                }} className="bg-slate-100 hover:bg-red-100 hover:text-red-700 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors"><Trash2 size={16}/> 1班減らす</button>
               </div>
             )}
             {renderBoard('group', d.lifeGroups || Array.from({length: 6}, (_, i) => ({ id: `life_${i+1}`, name: `${i+1}班` })), 'life')}
@@ -834,7 +842,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
           <div className="flex flex-col flex-1">
             {isEditing && (
               <div className="mb-4">
-                <button onClick={() => setModal({isOpen: true, type: 'study', name: '', capacity: ''})} className="bg-blue-50 text-blue-700 hover:bg-blue-100 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-blue-200"><Plus size={16}/> 新しい班を作�E</button>
+                <button onClick={() => setModal({isOpen: true, type: 'study', name: '', capacity: ''})} className="bg-blue-50 text-blue-700 hover:bg-blue-100 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-blue-200"><Plus size={16}/> 新しい班を作成</button>
               </div>
             )}
             {renderBoard('studyGroup', d.studyGroups || [])}
@@ -846,7 +854,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
           <div className="flex flex-col flex-1">
             {isEditing && (
               <div className="mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200 shadow-inner">
-                <div className="font-bold text-sm text-slate-700 mb-3 flex items-center gap-2"><AlertCircle size={16}/> 使用する宿泊棟を選抁E(曾爾青少年自然の家)</div>
+                <div className="font-bold text-sm text-slate-700 mb-3 flex items-center gap-2"><AlertCircle size={16}/> 使用する宿泊棟を選択 (曾爾青少年自然の家)</div>
                 <div className="flex flex-wrap gap-2">
                   {Object.keys(facilitiesData).map(b => (
                     <label key={b} className={cn("flex items-center gap-2 px-4 py-2 rounded-xl border-2 cursor-pointer transition-colors font-bold text-sm", (d.activeBuildings || []).includes(b) ? "bg-blue-50 border-blue-600 text-blue-800" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100")}>
@@ -891,7 +899,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                 <button onClick={() => setModal({isOpen: true, type: 'youthRole', name: '', capacity: ''})} className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-emerald-200"><Plus size={16}/> カスタム役割を追加</button>
               </div>
             )}
-            <div className="mb-4 text-sm font-bold text-slate-500 bg-slate-50 p-3 rounded-xl inline-block border border-slate-200">※ 行程表の主要役割と連動してぁE��す。枠の並べ替えも可能です、E/div>
+            <div className="mb-4 text-sm font-bold text-slate-500 bg-slate-50 p-3 rounded-xl inline-block border border-slate-200">※ 行程表の主要役割と連動しています。枠の並べ替えも可能です。</div>
             {renderBoard('youthRole', d.youthRoles || [])}
           </div>
         )}
@@ -901,7 +909,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
           <div className="flex flex-col flex-1">
             {isEditing && (
               <div className="mb-4">
-                <button onClick={() => setModal({isOpen: true, type: 'studentRole', name: '', capacity: ''})} className="bg-purple-50 text-purple-700 hover:bg-purple-100 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-purple-200"><Plus size={16}/> 役割を作�E</button>
+                <button onClick={() => setModal({isOpen: true, type: 'studentRole', name: '', capacity: ''})} className="bg-purple-50 text-purple-700 hover:bg-purple-100 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-purple-200"><Plus size={16}/> 役割を作成</button>
               </div>
             )}
             {renderBoard('studentRole', d.studentRoles || [])}
@@ -917,9 +925,9 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
             <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
               <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 className="font-bold text-lg text-slate-800">
-                  {modal.type === 'study' && '勉強会班の作�E'}
-                  {modal.type === 'car' && '配車（車）�E追加'}
-                  {modal.type === 'studentRole' && '学生部役割の作�E'}
+                  {modal.type === 'study' && '勉強会班の作成'}
+                  {modal.type === 'car' && '配車（車）の追加'}
+                  {modal.type === 'studentRole' && '学生部役割の作成'}
                 </h3>
                 <button onClick={() => setModal({...modal, isOpen: false})} className="p-2 text-slate-400 hover:bg-slate-200 rounded-full transition-colors"><X size={20}/></button>
               </div>
@@ -930,19 +938,19 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                     type="text"
                     value={modal.name}
                     onChange={e => setModal({...modal, name: e.target.value})}
-                    placeholder={modal.type==='study'?'侁E 小学生班':modal.type==='car'?'侁E 鈴木軁E:modal.type==='studentRole'?'侁E レク拁E��E:''}
+                    placeholder={modal.type==='study'?'例: 小学生班':modal.type==='car'?'例: 鈴木車':modal.type==='studentRole'?'例: レク担当':''}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
                     autoFocus
                   />
                 </div>
                 {modal.type === 'car' && (
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1">定員 (任愁E</label>
+                    <label className="block text-sm font-bold text-slate-700 mb-1">定員 (任意)</label>
                     <input 
                       type="number"
                       value={modal.capacity}
                       onChange={e => setModal({...modal, capacity: e.target.value})}
-                      placeholder="侁E 4"
+                      placeholder="例: 4"
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
                     />
                   </div>
@@ -963,4 +971,3 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
     </div>
   );
 }
-

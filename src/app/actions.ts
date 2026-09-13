@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use server";
 
 import { Redis } from '@upstash/redis'
@@ -64,7 +63,7 @@ export type AppData = {
 
 
 const DEFAULT_DATA: AppData = {
-  "announcement": "Googleドライブ�E賁E��から最新の行程表とタスクを�E動抽出しました�E�E,
+  "announcement": "Googleドライブの資料から最新の行程表とタスクを自動抽出しました！",
   "roles": [
     "学生部",
     "裏方",
@@ -76,12 +75,12 @@ const DEFAULT_DATA: AppData = {
   "schedule": [
     {
       "id": "s1",
-      "time": "8朁E4日 07:30",
-      "activity": "スタチE��雁E��",
+      "time": "8月14日 07:30",
+      "activity": "スタッフ集合",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "備品確認筁E
+          "note": "備品確認等"
         },
         {
           "role": "裏方",
@@ -99,16 +98,16 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s2",
-      "time": "8朁E4日 08:30",
-      "activity": "部員雁E��",
+      "time": "8月14日 08:30",
+      "activity": "部員集合",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "四階 貴重品、整列（女性役員�E�\n一隁E荷物整琁E��男性役員�E�E
+          "note": "四階 貴重品、整列（女性役員）\n一階 荷物整理（男性役員）"
         },
         {
           "role": "裏方",
-          "note": "1階で荷札配币E��荷物整琁E��E�EぁE��め�E呼びかけ\n4階で貴重品の回収→�E発号預かめE金丁E\n→施設カギ付きロチE��ー"
+          "note": "1階で荷札配布、荷物整理、酔い止めの呼びかけ\n4階で貴重品の回収→先発号預かり(金下)\n→施設カギ付きロッカー"
         },
         {
           "role": "保健",
@@ -118,228 +117,228 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s3",
-      "time": "8朁E4日 08:40",
-      "activity": "ご挨拶、E��校弁E,
+      "time": "8月14日 08:40",
+      "activity": "ご挨拶、開校式",
       "roleNotes": [
         {
           "role": "保健",
-          "note": "酔い止め最終確誁E
+          "note": "酔い止め最終確認"
         }
       ]
     },
     {
       "id": "s4",
-      "time": "8朁E4日 09:15",
-      "activity": "配軁E,
+      "time": "8月14日 09:15",
+      "activity": "配車",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "体調、E�EぁE��めE
+          "note": "体調、酔い止め"
         },
         {
           "role": "裏方",
-          "note": "先発絁E��中谷号出発�E�氏神様参拝！E
+          "note": "先発組：中谷号出発（氏神様参拝）"
         }
       ]
     },
     {
       "id": "s5",
-      "time": "8朁E4日 09:30",
+      "time": "8月14日 09:30",
       "activity": "出発",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "法�E、上履きが手荷物にあるか確認\n学年ごと固まって乗車\n車�EぁE��安な子�E前方"
+          "note": "法具、上履きが手荷物にあるか確認\n学年ごと固まって乗車\n車酔い不安な子は前方"
         },
         {
           "role": "裏方",
-          "note": "バス乗車絁E��バス乗車　奥から詰める\nバス付絁E��バスの後ろつぁE��ぁE��\n奈良絁E��大和�E木雁E��"
+          "note": "バス乗車組：バス乗車　奥から詰める\nバス付組：バスの後ろついていく\n奈良組：大和八木集合"
         },
         {
           "role": "保健",
-          "note": "バス運転手へ寸志渡す（柳田�E�E
+          "note": "バス運転手へ寸志渡す（柳田）"
         }
       ]
     },
     {
       "id": "s6",
-      "time": "8朁E4日 10:30",
+      "time": "8月14日 10:30",
       "activity": "針到着",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "近くの部員さんの体調確誁E
+          "note": "近くの部員さんの体調確認"
         }
       ]
     },
     {
       "id": "s7",
-      "time": "8朁E4日 11:00",
-      "activity": "針�E発",
+      "time": "8月14日 11:00",
+      "activity": "針出発",
       "roleNotes": []
     },
     {
       "id": "s8",
-      "time": "8朁E4日 12:00",
+      "time": "8月14日 12:00",
       "activity": "曽爾到着",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "宿舎へ移勁E
+          "note": "宿舎へ移動"
         },
         {
           "role": "裏方",
-          "note": "到着後、各係�E動きが落ち着ぁE��ら昼食（ａE4:00�E�E
+          "note": "到着後、各係の動きが落ち着いたら昼食（～14:00）"
         },
         {
           "role": "生活",
-          "note": "部屋割り表を貼めE
+          "note": "部屋割り表を貼る"
         },
         {
           "role": "飯・キャ",
-          "note": "備品搬入\n懐中電灯の允E��"
+          "note": "備品搬入\n懐中電灯の充電"
         }
       ]
     },
     {
       "id": "s9",
-      "time": "8朁E4日 12:30",
-      "activity": "昼食、班活動＠びめE��ぶ",
+      "time": "8月14日 12:30",
+      "activity": "昼食、班活動＠びょうぶ",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "荷物置き次第雁E��"
+          "note": "荷物置き次第集合"
         },
         {
           "role": "保健",
-          "note": "シーチE��部屋ごとに刁E��めE
+          "note": "シーツを部屋ごとに分ける"
         },
         {
           "role": "生活",
-          "note": "シーチE��部屋ごとに刁E��めE
+          "note": "シーツを部屋ごとに分ける"
         }
       ]
     },
     {
       "id": "s10",
-      "time": "8朁E4日 13:00",
+      "time": "8月14日 13:00",
       "activity": "備品受け取り",
       "roleNotes": [
         {
           "role": "生活",
-          "note": "吁E��泊棟階段下にゴミ袋設置"
+          "note": "各宿泊棟階段下にゴミ袋設置"
         },
         {
           "role": "飯・キャ",
-          "note": "ゴミ袋、トーチ棒（松明）受け取めE
+          "note": "ゴミ袋、トーチ棒（松明）受け取り"
         }
       ]
     },
     {
       "id": "s11",
-      "time": "8朁E4日 14:00",
+      "time": "8月14日 14:00",
       "activity": "給水",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "修行＠めE��らぎ�E�E2�E�20�E�21�E�25番・おくじ�E陀羁E���E�E
+          "note": "修行＠やすらぎ（12･20･21･25番・おくじ・陀羅尼）"
         },
         {
           "role": "お茶",
-          "note": "氷受け取り、�EめE��ぶにお茶を運ぶ→お茶提侁E
+          "note": "氷受け取り、びょうぶにお茶を運ぶ→お茶提供"
         },
         {
           "role": "飯・キャ",
-          "note": "お茶運�E手伝う"
+          "note": "お茶運び手伝う"
         }
       ]
     },
     {
       "id": "s12",
-      "time": "8朁E4日 14:45",
+      "time": "8月14日 14:45",
       "activity": "裏方企画",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "裏方企画①�E�よろぁE��ａE�E�E00�E�E
+          "note": "裏方企画①＠よろい（～1６:00）"
         }
       ]
     },
     {
       "id": "s13",
-      "time": "8朁E4日 15:00",
-      "activity": "昼レク�E�びめE��ぶ",
+      "time": "8月14日 15:00",
+      "activity": "昼レク＠びょうぶ",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "昼レク拁E��進衁E
+          "note": "昼レク担当進行"
         }
       ]
     },
     {
       "id": "s14",
-      "time": "8朁E4日 16:05",
-      "activity": "裏方施設打ち合わぁE,
+      "time": "8月14日 16:05",
+      "activity": "裏方施設打ち合わせ",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "施設打ち合わぁE金下け・阪本智乁E　�E�かめめE��"
+          "note": "施設打ち合わせ(金下け・阪本智也)　＠かめやま"
         },
         {
           "role": "飯・キャ",
-          "note": "飯盒�E下見\n※タイミングは施設の方から連絡あり"
+          "note": "飯盒の下見\n※タイミングは施設の方から連絡あり"
         }
       ]
     },
     {
       "id": "s15",
-      "time": "8朁E4日 16:10",
-      "activity": "昼レク終亁E��裏方企画めE,
+      "time": "8月14日 16:10",
+      "activity": "昼レク終了（裏方企画も",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "宿舎に戻って勉強会、�E浴準備"
+          "note": "宿舎に戻って勉強会、入浴準備"
         },
         {
           "role": "裏方",
-          "note": "宿舎に戻って入浴準備→夕べの雁E��"
+          "note": "宿舎に戻って入浴準備→夕べの集い"
         }
       ]
     },
     {
       "id": "s16",
-      "time": "8朁E4日 16:30",
-      "activity": "夕べの雁E��",
+      "time": "8月14日 16:30",
+      "activity": "夕べの集い",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "玁E��雁E��"
+          "note": "玄関集合"
         },
         {
           "role": "裏方",
-          "note": "玁E��雁E��"
+          "note": "玄関集合"
         }
       ]
     },
     {
       "id": "s17",
-      "time": "8朁E4日 17:00",
-      "activity": "入浴(、E7:50)",
+      "time": "8月14日 17:00",
+      "activity": "入浴(〜17:50)",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "裏方はお亀 or 21�E�E0�E�２３！E0"
+          "note": "裏方はお亀 or 21：30～２３：00"
         }
       ]
     },
     {
       "id": "s18",
-      "time": "8朁E4日 17:50",
-      "activity": "夕飁E�E�E8:30)",
+      "time": "8月14日 17:50",
+      "activity": "夕食(～18:30)",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "ナイトレクで外�Eる人は屋外�E格好"
+          "note": "ナイトレクで外出る人は屋外の格好"
         },
         {
           "role": "裏方",
@@ -347,14 +346,14 @@ const DEFAULT_DATA: AppData = {
         },
         {
           "role": "生活",
-          "note": "食後�Eお皿チェチE��"
+          "note": "食後のお皿チェック"
         }
       ]
     },
     {
       "id": "s19",
-      "time": "8朁E4日 18:40",
-      "activity": "勉強会＠びめE��ぶ",
+      "time": "8月14日 18:40",
+      "activity": "勉強会＠びょうぶ",
       "roleNotes": [
         {
           "role": "学生部",
@@ -364,61 +363,61 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s20",
-      "time": "8朁E4日 19:00",
+      "time": "8月14日 19:00",
       "activity": "裏方ナイトレク準備",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "おどかし�E�持ち場の視寁E
+          "note": "おどかし：持ち場の視察"
         },
         {
           "role": "お茶",
-          "note": "氷受け取り、ナイトハイク用アクエリ用愁E
+          "note": "氷受け取り、ナイトハイク用アクエリ用意"
         },
         {
           "role": "飯・キャ",
-          "note": "お茶準備等�Eサポ�EチE
+          "note": "お茶準備等のサポート"
         }
       ]
     },
     {
       "id": "s21",
-      "time": "8朁E4日 19:40",
-      "activity": "勉強会終亁E,
+      "time": "8月14日 19:40",
+      "activity": "勉強会終了",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "おどかし�E�持ち場につぁE
+          "note": "おどかし：持ち場につく"
         },
         {
           "role": "生活",
-          "note": "玁E��で虫よけスプレー"
+          "note": "玄関で虫よけスプレー"
         },
         {
           "role": "お茶",
-          "note": "ナイトレク出発前お茶提侁Eペット�Eトルから)\nアクエリ提侁E�E�お亀茶屋　金下さ・栁E��)"
+          "note": "ナイトレク出発前お茶提供(ペットボトルから)\nアクエリ提供(＠お亀茶屋　金下さ・栃尾)"
         }
       ]
     },
     {
       "id": "s22",
-      "time": "8朁E4日 19:50",
+      "time": "8月14日 19:50",
       "activity": "ナイトレク",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "進衁E
+          "note": "進行"
         },
         {
           "role": "裏方",
-          "note": "おどかし�E�おどかす、E��張めE
+          "note": "おどかし：おどかす、頑張る"
         }
       ]
     },
     {
       "id": "s23",
-      "time": "8朁E4日 21:00",
-      "activity": "ナイトレク終亁E,
+      "time": "8月14日 21:00",
+      "activity": "ナイトレク終了",
       "roleNotes": [
         {
           "role": "お茶",
@@ -428,8 +427,8 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s24",
-      "time": "8朁E4日 21:10",
-      "activity": "班活動@宿舁E,
+      "time": "8月14日 21:10",
+      "activity": "班活動@宿舎",
       "roleNotes": [
         {
           "role": "学生部",
@@ -439,53 +438,53 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s25",
-      "time": "8朁E4日 21:30",
-      "activity": "裏方　入浴�E�ａE3:00�E�E,
+      "time": "8月14日 21:30",
+      "activity": "裏方　入浴（～23:00）",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "持E��老E��　入浴時間"
+          "note": "指導者用　入浴時間"
         }
       ]
     },
     {
       "id": "s26",
-      "time": "8朁E4日 21:40",
+      "time": "8月14日 21:40",
       "activity": "ご挨拶",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "币E��準備持E��E
+          "note": "布団準備指導"
         },
         {
           "role": "生活",
-          "note": "币E��の敷き方説明（小林・森�E�E
+          "note": "布団の敷き方説明（小林・森）"
         }
       ]
     },
     {
       "id": "s27",
-      "time": "8朁E4日 21:50",
+      "time": "8月14日 21:50",
       "activity": "就寝準備",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "チ�Eフ歯磨き、就寝準備頁E��振り�EぁE
+          "note": "チーフ歯磨き、就寝準備順番振り分け"
         },
         {
           "role": "裏方",
-          "note": "币E��準備の手伝い"
+          "note": "布団準備の手伝い"
         }
       ]
     },
     {
       "id": "s28",
-      "time": "8朁E4日 22:00",
-      "activity": "完�E消�E",
+      "time": "8月14日 22:00",
+      "activity": "完全消灯",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "消�E後�E見守り"
+          "note": "消灯後の見守り"
         },
         {
           "role": "お茶",
@@ -495,46 +494,46 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s29",
-      "time": "8朁E4日 22:30",
-      "activity": "スタチE��ミ�EチE��ング@びめE��ぶ",
+      "time": "8月14日 22:30",
+      "activity": "スタッフミーティング@びょうぶ",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "振り返り、翌日の行程確誁E
+          "note": "振り返り、翌日の行程確認"
         },
         {
           "role": "裏方",
-          "note": "振り返り、翌日の行程確誁E
+          "note": "振り返り、翌日の行程確認"
         },
         {
           "role": "保健",
-          "note": "体調不良老E�E共朁E
+          "note": "体調不良者の共有"
         },
         {
           "role": "飯・キャ",
-          "note": "キャンプファイヤーの松明�E持ち方確誁E
+          "note": "キャンプファイヤーの松明の持ち方確認"
         }
       ]
     },
     {
       "id": "s30",
-      "time": "8朁E4日 23:00",
+      "time": "8月14日 23:00",
       "activity": "",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "しおりコメンチE
+          "note": "しおりコメント"
         },
         {
           "role": "裏方",
-          "note": "見回り①　男子：��下け・進藤　女子：山脁E�E益田"
+          "note": "見回り①　男子：金下け・進藤　女子：山脇・益田"
         }
       ]
     },
     {
       "id": "s31",
-      "time": "8朁E4日 24:00",
-      "activity": "スタチE��完�E消�E",
+      "time": "8月14日 24:00",
+      "activity": "スタッフ完全消灯",
       "roleNotes": [
         {
           "role": "裏方",
@@ -544,61 +543,61 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s32",
-      "time": "8朁E5日 06:00",
-      "activity": "起庁E,
+      "time": "8月15日 06:00",
+      "activity": "起床",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "起床時刻前に征E��\n※飯盒�E格好"
+          "note": "起床時刻前に待機\n※飯盒の格好"
         },
         {
           "role": "裏方",
-          "note": "※飯盒�E格好"
+          "note": "※飯盒の格好"
         }
       ]
     },
     {
       "id": "s33",
-      "time": "8朁E5日 06:30",
-      "activity": "読絁E,
+      "time": "8月15日 06:30",
+      "activity": "読経",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "抜粋：前読み、E��番、E6番、後読み"
+          "note": "抜粋：前読み、２番、16番、後読み"
         },
         {
           "role": "裏方",
-          "note": "抜粋：前読み、E��番、E6番、後読み"
+          "note": "抜粋：前読み、２番、16番、後読み"
         }
       ]
     },
     {
       "id": "s34",
-      "time": "8朁E5日 07:00",
-      "activity": "朝�E雁E��",
+      "time": "8月15日 07:00",
+      "activity": "朝の集い",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "玁E��雁E���E�朝冷えるかも�E�E
+          "note": "玄関集合（朝冷えるかも）"
         },
         {
           "role": "裏方",
-          "note": "玁E��雁E��"
+          "note": "玄関集合"
         },
         {
           "role": "生活",
-          "note": "食後�Eお皿チェチE��\n"
+          "note": "食後のお皿チェック\n"
         },
         {
           "role": "飯・キャ",
-          "note": "食材受け取りサポ�EチE
+          "note": "食材受け取りサポート"
         }
       ]
     },
     {
       "id": "s35",
-      "time": "8朁E5日 07:50",
-      "activity": "朝食（、E:30�E�E,
+      "time": "8月15日 07:50",
+      "activity": "朝食（〜8:30）",
       "roleNotes": [
         {
           "role": "学生部",
@@ -608,23 +607,23 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s36",
-      "time": "8朁E5日 08:00",
+      "time": "8月15日 08:00",
       "activity": "",
       "roleNotes": [
         {
           "role": "生活",
-          "note": "鍵を事務室に取りに行く、E��材受取�E�小林・星加　�E�E
+          "note": "鍵を事務室に取りに行く、食材受取（小林・星加　）"
         },
         {
           "role": "飯・キャ",
-          "note": "まき受け取めE
+          "note": "まき受け取り"
         }
       ]
     },
     {
       "id": "s37",
-      "time": "8朁E5日 08:30",
-      "activity": "班活動＠宿舁E,
+      "time": "8月15日 08:30",
+      "activity": "班活動＠宿舎",
       "roleNotes": [
         {
           "role": "学生部",
@@ -634,16 +633,16 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s38",
-      "time": "8朁E5日 09:30",
-      "activity": "飯盒炊飯�E�、E1:30�E�＠本館丁E,
+      "time": "8月15日 09:30",
+      "activity": "飯盒炊飯（〜11:30）＠本館上",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "青年部カレーは生活・お茶拁E��中忁E��調琁E
+          "note": "青年部カレーは生活・お茶担当中心に調理"
         },
         {
           "role": "生活",
-          "note": "カレーの作り方説明（星加�E�E
+          "note": "カレーの作り方説明（星加）"
         },
         {
           "role": "飯・キャ",
@@ -653,38 +652,38 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s39",
-      "time": "8朁E5日 10:30",
-      "activity": "昼食開始（目安！E,
+      "time": "8月15日 10:30",
+      "activity": "昼食開始（目安）",
       "roleNotes": [
         {
           "role": "生活",
-          "note": "食後�Eお皿チェチE��"
+          "note": "食後のお皿チェック"
         },
         {
           "role": "お茶",
-          "note": "かき氷、氷の受け取り、お茶提侁E食べるとぁE"
+          "note": "かき氷、氷の受け取り、お茶提供(食べるとき)"
         }
       ]
     },
     {
       "id": "s40",
-      "time": "8朁E5日 11:30",
-      "activity": "牁E��け開姁E,
+      "time": "8月15日 11:30",
+      "activity": "片付け開始",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "牁E��けサポ�EチE
+          "note": "片付けサポート"
         },
         {
           "role": "生活",
-          "note": "鍋、皿の洗いチェチE��"
+          "note": "鍋、皿の洗いチェック"
         }
       ]
     },
     {
       "id": "s41",
-      "time": "8朁E5日 12:20",
-      "activity": "移動開姁E,
+      "time": "8月15日 12:20",
+      "activity": "移動開始",
       "roleNotes": [
         {
           "role": "学生部",
@@ -694,96 +693,96 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s42",
-      "time": "8朁E5日 12:30",
-      "activity": "班活勁E,
+      "time": "8月15日 12:30",
+      "activity": "班活動",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "到着次第時間まで班活勁E
+          "note": "到着次第時間まで班活動"
         },
         {
           "role": "お茶",
-          "note": "びめE��ぶにお茶を運ぶ"
+          "note": "びょうぶにお茶を運ぶ"
         },
         {
           "role": "飯・キャ",
-          "note": "お茶運�E手伝う"
+          "note": "お茶運び手伝う"
         }
       ]
     },
     {
       "id": "s43",
-      "time": "8朁E5日 13:00",
-      "activity": "勉強会@びめE��ぶ",
+      "time": "8月15日 13:00",
+      "activity": "勉強会@びょうぶ",
       "roleNotes": []
     },
     {
       "id": "s44",
-      "time": "8朁E5日 13:30",
-      "activity": "裏方修衁E,
+      "time": "8月15日 13:30",
+      "activity": "裏方修行",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "修行＠めE��らぎ�E�E2�E�20�E�21�E�25番・おくじ�E陀羁E���E�E
+          "note": "修行＠やすらぎ（12･20･21･25番・おくじ・陀羅尼）"
         }
       ]
     },
     {
       "id": "s45",
-      "time": "8朁E5日 14:00",
+      "time": "8月15日 14:00",
       "activity": "給水",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "裏方企画②�E�よろぁE
+          "note": "裏方企画②＠よろい"
         },
         {
           "role": "お茶",
-          "note": "氷受け取り→お茶提侁E
+          "note": "氷受け取り→お茶提供"
         },
         {
           "role": "飯・キャ",
-          "note": "♪キャンプファイヤー出し物練翁E
+          "note": "♪キャンプファイヤー出し物練習"
         }
       ]
     },
     {
       "id": "s46",
-      "time": "8朁E5日 14:10",
+      "time": "8月15日 14:10",
       "activity": "裏方　ヨガ",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "かなえちめE��ヨガレチE��ン"
+          "note": "かなえちゃんヨガレッスン"
         }
       ]
     },
     {
       "id": "s47",
-      "time": "8朁E5日 14:50",
-      "activity": "裏方　勉強企E,
+      "time": "8月15日 14:50",
+      "activity": "裏方　勉強会",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "勉強会：「まっすぐな向上忁E��持とぁE��につぁE��"
+          "note": "勉強会：「まっすぐな向上心を持とう」について"
         }
       ]
     },
     {
       "id": "s48",
-      "time": "8朁E5日 15:00",
+      "time": "8月15日 15:00",
       "activity": "備品受け取り",
       "roleNotes": [
         {
           "role": "飯・キャ",
-          "note": "キャンプファイヤーセチE��受け取り"
+          "note": "キャンプファイヤーセット受け取り"
         }
       ]
     },
     {
       "id": "s49",
-      "time": "8朁E5日 15:50",
-      "activity": "勉強会終亁E,
+      "time": "8月15日 15:50",
+      "activity": "勉強会終了",
       "roleNotes": [
         {
           "role": "学生部",
@@ -795,55 +794,55 @@ const DEFAULT_DATA: AppData = {
         },
         {
           "role": "飯・キャ",
-          "note": "めE��ら立て"
+          "note": "やぐら立て"
         }
       ]
     },
     {
       "id": "s50",
-      "time": "8朁E5日 16:05",
-      "activity": "裏方施設打ち合わぁE,
+      "time": "8月15日 16:05",
+      "activity": "裏方施設打ち合わせ",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "施設打ち合わぁE金下け・阪本智乁E　�E�かめめE��"
+          "note": "施設打ち合わせ(金下け・阪本智也)　＠かめやま"
         }
       ]
     },
     {
       "id": "s51",
-      "time": "8朁E5日 16:30",
-      "activity": "夕べの雁E��",
+      "time": "8月15日 16:30",
+      "activity": "夕べの集い",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "玁E��雁E��"
+          "note": "玄関集合"
         }
       ]
     },
     {
       "id": "s52",
-      "time": "8朁E5日 17:00",
-      "activity": "入浴(、E7:40)",
+      "time": "8月15日 17:00",
+      "activity": "入浴(〜17:40)",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "裏方はお亀 or 21�E�E0�E�２３！E0"
+          "note": "裏方はお亀 or 21：30～２３：00"
         },
         {
           "role": "生活",
-          "note": "食後�Eお皿チェチE��"
+          "note": "食後のお皿チェック"
         }
       ]
     },
     {
       "id": "s53",
-      "time": "8朁E5日 17:40",
-      "activity": "夕飁E、E8:20)",
+      "time": "8月15日 17:40",
+      "activity": "夕食(〜18:20)",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "夕食後、宿舎へキャンプファイヤー準備\nそ�E後各班びめE��ぶでキャンプファイヤー練翁E
+          "note": "夕食後、宿舎へキャンプファイヤー準備\nその後各班びょうぶでキャンプファイヤー練習"
         },
         {
           "role": "裏方",
@@ -853,7 +852,7 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s54",
-      "time": "8朁E5日 19:00",
+      "time": "8月15日 19:00",
       "activity": "",
       "roleNotes": [
         {
@@ -868,116 +867,116 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s55",
-      "time": "8朁E5日 19:10",
-      "activity": "玁E��雁E���E�班長・班員�E�E,
+      "time": "8月15日 19:10",
+      "activity": "玄関集合（班長・班員）",
       "roleNotes": [
         {
           "role": "お茶",
-          "note": "アクエリ用愁E
+          "note": "アクエリ用意"
         },
         {
           "role": "飯・キャ",
-          "note": "火の管琁E
+          "note": "火の管理"
         }
       ]
     },
     {
       "id": "s56",
-      "time": "8朁E5日 19:20",
-      "activity": "キャンプファイアー@はつらつ庁E��",
+      "time": "8月15日 19:20",
+      "activity": "キャンプファイアー@はつらつ広場",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "チ�Eフ：キャンプファイヤー準備"
+          "note": "チーフ：キャンプファイヤー準備"
         },
         {
           "role": "裏方",
-          "note": "学生部サポ�EチEn小林(音響)、松允E動画)"
+          "note": "学生部サポート\n小林(音響)、松元(動画)"
         }
       ]
     },
     {
       "id": "s57",
-      "time": "8朁E5日 19:30",
-      "activity": "歌集リクエスチE,
+      "time": "8月15日 19:30",
+      "activity": "歌集リクエスト",
       "roleNotes": []
     },
     {
       "id": "s58",
-      "time": "8朁E5日 19:40",
-      "activity": "休�E①",
+      "time": "8月15日 19:40",
+      "activity": "休憩①",
       "roleNotes": [
         {
           "role": "お茶",
-          "note": "アクエリ提侁E
+          "note": "アクエリ提供"
         }
       ]
     },
     {
       "id": "s59",
-      "time": "8朁E5日 19:55",
-      "activity": "しゅぁE��ぁE��めE��けん",
+      "time": "8月15日 19:55",
+      "activity": "しゅうまいじゃんけん",
       "roleNotes": []
     },
     {
       "id": "s60",
-      "time": "8朁E5日 20:05",
-      "activity": "休�E②",
+      "time": "8月15日 20:05",
+      "activity": "休憩②",
       "roleNotes": [
         {
           "role": "お茶",
-          "note": "アクエリ提侁E
+          "note": "アクエリ提供"
         }
       ]
     },
     {
       "id": "s61",
-      "time": "8朁E5日 20:10",
+      "time": "8月15日 20:10",
       "activity": "マクドナルドゲーム",
       "roleNotes": []
     },
     {
       "id": "s62",
-      "time": "8朁E5日 20:25",
-      "activity": "休�E③、�E台準備",
+      "time": "8月15日 20:25",
+      "activity": "休憩③、舞台準備",
       "roleNotes": [
         {
           "role": "お茶",
-          "note": "アクエリ提侁E
+          "note": "アクエリ提供"
         }
       ]
     },
     {
       "id": "s63",
-      "time": "8朁E5日 20:35",
+      "time": "8月15日 20:35",
       "activity": "青年部出し物",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "7刁E��進藤"
+          "note": "7分　進藤"
         }
       ]
     },
     {
       "id": "s64",
-      "time": "8朁E5日 20:42",
+      "time": "8月15日 20:42",
       "activity": "学生部出し物",
       "roleNotes": []
     },
     {
       "id": "s65",
-      "time": "8朁E5日 20:50",
-      "activity": "キャンプファイヤー終亁E,
+      "time": "8月15日 20:50",
+      "activity": "キャンプファイヤー終了",
       "roleNotes": []
     },
     {
       "id": "s66",
-      "time": "8朁E5日 21:00",
-      "activity": "班活動@宿舁E,
+      "time": "8月15日 21:00",
+      "activity": "班活動@宿舎",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "しおり回叁E
+          "note": "しおり回収"
         },
         {
           "role": "お茶",
@@ -987,29 +986,29 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s67",
-      "time": "8朁E5日 21:30",
+      "time": "8月15日 21:30",
       "activity": "ご挨拶",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "翌日、シーチE��収�E大掁E��連絡\n裏方　入浴�E�ａE3:00�E�E
+          "note": "翌日、シーツ回収・大掃除連絡\n裏方　入浴（～23:00）"
         }
       ]
     },
     {
       "id": "s68",
-      "time": "8朁E5日 21:40",
+      "time": "8月15日 21:40",
       "activity": "就寝準備",
       "roleNotes": []
     },
     {
       "id": "s69",
-      "time": "8朁E5日 22:00",
-      "activity": "完�E消�E",
+      "time": "8月15日 22:00",
+      "activity": "完全消灯",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "消�E後�E見守り"
+          "note": "消灯後の見守り"
         },
         {
           "role": "お茶",
@@ -1019,68 +1018,68 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s70",
-      "time": "8朁E5日 22:30",
-      "activity": "スタチE��ミ�EチE��ング",
+      "time": "8月15日 22:30",
+      "activity": "スタッフミーティング",
       "roleNotes": [
         {
           "role": "保健",
-          "note": "体調不良老E�E共朁E
+          "note": "体調不良者の共有"
         }
       ]
     },
     {
       "id": "s71",
-      "time": "8朁E5日 23:00",
+      "time": "8月15日 23:00",
       "activity": "",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "しおりコメンチE
+          "note": "しおりコメント"
         },
         {
           "role": "裏方",
-          "note": "見回り①　男子：戸田・松允E��女子：��下さ・丸山"
+          "note": "見回り①　男子：戸田・松元　女子：金下さ・丸山"
         }
       ]
     },
     {
       "id": "s72",
-      "time": "8朁E5日 24:00",
-      "activity": "スタチE��完�E消�E",
+      "time": "8月15日 24:00",
+      "activity": "スタッフ完全消灯",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "見回り②　男子：小林・阪本智也　女子：栁E��・谷巁E
+          "note": "見回り②　男子：小林・阪本智也　女子：栃尾・谷川"
         }
       ]
     },
     {
       "id": "s73",
-      "time": "8朁E6日 06:00",
-      "activity": "起庁E,
+      "time": "8月16日 06:00",
+      "activity": "起床",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "起床時刻前に征E��\nシーチE��手伝う"
+          "note": "起床時刻前に待機\nシーツ等手伝う"
         },
         {
           "role": "裏方",
-          "note": "自室のシーチE��収、やすらぎへ、学生部部屋�EシーチE��叁E
+          "note": "自室のシーツ回収、やすらぎへ、学生部部屋のシーツ回収"
         },
         {
           "role": "保健",
-          "note": "シーチE��数確誁E
+          "note": "シーツ枚数確認"
         },
         {
           "role": "生活",
-          "note": "シーチE��数確誁E
+          "note": "シーツ枚数確認"
         }
       ]
     },
     {
       "id": "s74",
-      "time": "8朁E6日 06:30",
-      "activity": "読絁E,
+      "time": "8月16日 06:30",
+      "activity": "読経",
       "roleNotes": [
         {
           "role": "学生部",
@@ -1090,79 +1089,79 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s75",
-      "time": "8朁E6日 07:00",
-      "activity": "朝�E雁E��",
+      "time": "8月16日 07:00",
+      "activity": "朝の集い",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "玁E��に雁E��"
+          "note": "玄関に集合"
         },
         {
           "role": "裏方",
-          "note": "玁E��に雁E��"
+          "note": "玄関に集合"
         },
         {
           "role": "飯・キャ",
-          "note": "キャンプファイヤーの牁E��け"
+          "note": "キャンプファイヤーの片付け"
         }
       ]
     },
     {
       "id": "s76",
-      "time": "8朁E6日 07:40",
-      "activity": "朝食（、E:20�E�E,
+      "time": "8月16日 07:40",
+      "activity": "朝食（〜8:20）",
       "roleNotes": [
         {
           "role": "生活",
-          "note": "食後�Eお皿チェチE��"
+          "note": "食後のお皿チェック"
         }
       ]
     },
     {
       "id": "s77",
-      "time": "8朁E6日 08:30",
-      "activity": "大掁E���E�トイレ掁E��なし！E,
+      "time": "8月16日 08:30",
+      "activity": "大掃除（トイレ掃除なし）",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "吁E��屋掃除チェチE���E���下�E進藤�E�E
+          "note": "各部屋掃除チェック（金下・進藤）"
         }
       ]
     },
     {
       "id": "s78",
-      "time": "8朁E6日 08:50",
-      "activity": "移勁E,
+      "time": "8月16日 08:50",
+      "activity": "移動",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "荷物持ってびめE��ぶへ\n※これ以降宿舎に帰りません"
+          "note": "荷物持ってびょうぶへ\n※これ以降宿舎に帰りません"
         },
         {
           "role": "裏方",
-          "note": "荷物持ってびめE��ぶへ\n※これ以降宿舎に帰りません"
+          "note": "荷物持ってびょうぶへ\n※これ以降宿舎に帰りません"
         }
       ]
     },
     {
       "id": "s79",
-      "time": "8朁E6日 09:00",
+      "time": "8月16日 09:00",
       "activity": "宿泊棟退所",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "退所手続き(金下�E進藤)　�E�むしとめE
+          "note": "退所手続き(金下・進藤)　＠むしとり"
         }
       ]
     },
     {
       "id": "s80",
-      "time": "8朁E6日 09:00",
-      "activity": "勉強会発表@びめE��ぶ",
+      "time": "8月16日 09:00",
+      "activity": "勉強会発表@びょうぶ",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "学年ごとに発表�E�E班�E�E
+          "note": "学年ごとに発表（6班）"
         },
         {
           "role": "裏方",
@@ -1170,22 +1169,22 @@ const DEFAULT_DATA: AppData = {
         },
         {
           "role": "生活",
-          "note": "発表撮影�E�松允E��E
+          "note": "発表撮影（松元）"
         }
       ]
     },
     {
       "id": "s81",
-      "time": "8朁E6日 10:00",
-      "activity": "班活動（お楽しみ会！E,
+      "time": "8月16日 10:00",
+      "activity": "班活動（お楽しみ会）",
       "roleNotes": [
         {
           "role": "保健",
-          "note": "貴重品の返却\n酔い止め確誁E
+          "note": "貴重品の返却\n酔い止め確認"
         },
         {
           "role": "生活",
-          "note": "学生部へお菓子、色紙�E币E
+          "note": "学生部へお菓子、色紙配布"
         },
         {
           "role": "お茶",
@@ -1193,25 +1192,25 @@ const DEFAULT_DATA: AppData = {
         },
         {
           "role": "飯・キャ",
-          "note": "びめE��ぶブルーシート引く"
+          "note": "びょうぶブルーシート引く"
         }
       ]
     },
     {
       "id": "s82",
-      "time": "8朁E6日 10:05",
+      "time": "8月16日 10:05",
       "activity": "裏方企画",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "裏方企画③@よろぁE��発表終亁E��第�E�E
+          "note": "裏方企画③@よろい（発表終了次第）"
         }
       ]
     },
     {
       "id": "s83",
-      "time": "8朁E6日 11:50",
-      "activity": "移動、�E真撮影",
+      "time": "8月16日 11:50",
+      "activity": "移動、写真撮影",
       "roleNotes": [
         {
           "role": "裏方",
@@ -1221,53 +1220,53 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s84",
-      "time": "8朁E6日 12:00",
-      "activity": "昼食@よろぁE,
+      "time": "8月16日 12:00",
+      "activity": "昼食@よろい",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "昼飁Eおにぎり)"
+          "note": "昼食(おにぎり)"
         },
         {
           "role": "生活",
-          "note": "おにぎり受取、E�E币E
+          "note": "おにぎり受取、配布"
         }
       ]
     },
     {
       "id": "s85",
-      "time": "8朁E6日 12:15",
-      "activity": "びめE��ぶ完�E退出",
+      "time": "8月16日 12:15",
+      "activity": "びょうぶ完全退出",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "バス乗車絁E�E学生より�Eに乗車　奥から詰める"
+          "note": "バス乗車組は学生より先に乗車　奥から詰める"
         },
         {
           "role": "生活",
-          "note": "昼食ゴミ回叁E
+          "note": "昼食ゴミ回収"
         }
       ]
     },
     {
       "id": "s86",
-      "time": "8朁E6日 12:45",
+      "time": "8月16日 12:45",
       "activity": "曽爾出発",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "退所挨拶(中谷・金丁E"
+          "note": "退所挨拶(中谷・金下)"
         }
       ]
     },
     {
       "id": "s87",
-      "time": "8朁E6日 15:00",
+      "time": "8月16日 15:00",
       "activity": "教会到着",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "備品牁E��け"
+          "note": "備品片付け"
         },
         {
           "role": "お茶",
@@ -1277,27 +1276,27 @@ const DEFAULT_DATA: AppData = {
     },
     {
       "id": "s88",
-      "time": "8朁E6日 15:30",
-      "activity": "閉校弁E,
+      "time": "8月16日 15:30",
+      "activity": "閉校式",
       "roleNotes": [
         {
           "role": "学生部",
-          "note": "チ�Eフ進行\nそれぞれ挨拶"
+          "note": "チーフ進行\nそれぞれ挨拶"
         },
         {
           "role": "裏方",
-          "note": "渡�E�動画流す"
+          "note": "渡：動画流す"
         }
       ]
     },
     {
       "id": "s89",
-      "time": "8朁E6日 16:00",
+      "time": "8月16日 16:00",
       "activity": "解散",
       "roleNotes": [
         {
           "role": "裏方",
-          "note": "ドライバ�E�E�交通費渁E��E
+          "note": "ドライバー：交通費清算"
         }
       ]
     }
@@ -1306,15 +1305,15 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "t1",
       
-      "name": "教会に賁E��郵送あめE,
+      "name": "教会に資料郵送あり",
       "deadline": "",
-      "assignee": "教企E,
+      "assignee": "教会",
       "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t2",
       
-      "name": "希望日提�E、E��催日決宁E,
+      "name": "希望日提出、開催日決定",
       "deadline": "",
       "assignee": "地区長",
       "memo": "", "fileUrl": "", "completed": false
@@ -1322,37 +1321,37 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "t3",
       
-      "name": "林間申込期間、申し込みフォーム作�E",
+      "name": "林間申込期間、申し込みフォーム作成",
       "deadline": "",
-      "assignee": "会訁E,
+      "assignee": "会計",
       "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t4",
       
-      "name": "学生部の活動計画�E�案）作�E",
+      "name": "学生部の活動計画（案）作成",
       "deadline": "",
-      "assignee": "チ�EチE,
+      "assignee": "チーフ",
       "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t5",
       
-      "name": "青年部の活動計画�E�案）作�E",
+      "name": "青年部の活動計画（案）作成",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t6",
       
-      "name": "事前打ち合わせ会�E依頼",
+      "name": "事前打ち合わせ会の依頼",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t7",
       
-      "name": "利用申込書・活動計画書作�E、提出",
+      "name": "利用申込書・活動計画書作成、提出",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
@@ -1366,21 +1365,21 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "t9",
       
-      "name": "宿泊室の決宁E,
+      "name": "宿泊室の決定",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t10",
       
-      "name": "教会�E備品確認（学生部にも忁E��なも�Eを確認！E,
+      "name": "教会の備品確認（学生部にも必要なものを確認）",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t11",
       
-      "name": "青年部用のしおり、行程表作�E",
+      "name": "青年部用のしおり、行程表作成",
       "deadline": "",
       "assignee": "生活",
       "memo": "", "fileUrl": "", "completed": false
@@ -1395,22 +1394,22 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "t13",
       
-      "name": "活動場所、E��事、�E浴時間の決定（施設問い合わせ！E,
+      "name": "活動場所、食事、入浴時間の決定（施設問い合わせ）",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t14",
       
-      "name": "食事注斁E��作�E、提出",
+      "name": "食事注文書作成、提出",
       "deadline": "",
-      "assignee": "会訁E,
+      "assignee": "会計",
       "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t15",
       
-      "name": "食物アレルギー　事前確認票の作�E�E�学生部に依頼�E�E,
+      "name": "食物アレルギー　事前確認票の作成（学生部に依頼）",
       "deadline": "",
       "assignee": "生活",
       "memo": "", "fileUrl": "", "completed": false
@@ -1418,7 +1417,7 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "t16",
       
-      "name": "アレルギー相諁E��食堂に電話�E�E,
+      "name": "アレルギー相談（食堂に電話）",
       "deadline": "",
       "assignee": "生活",
       "memo": "", "fileUrl": "", "completed": false
@@ -1426,29 +1425,29 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "t17",
       
-      "name": "売店注斁E��作�E",
+      "name": "売店注文書作成",
       "deadline": "",
-      "assignee": "会訁E,
+      "assignee": "会計",
       "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t18",
       
-      "name": "宿泊老E��簿作�E",
+      "name": "宿泊者名簿作成",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t19",
       
-      "name": "健康調査書作�E",
+      "name": "健康調査書作成",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t20",
       
-      "name": "部屋割り表作�E",
+      "name": "部屋割り表作成",
       "deadline": "",
       "assignee": "生活",
       "memo": "", "fileUrl": "", "completed": false
@@ -1456,7 +1455,7 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "t21",
       
-      "name": "渁E��点検表、シーチE��カバ�E確認票作�E",
+      "name": "清掃点検表、シーツ枕カバー確認票作成",
       "deadline": "",
       "assignee": "生活",
       "memo": "", "fileUrl": "", "completed": false
@@ -1464,15 +1463,15 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "t22",
       
-      "name": "青年部の自家用車�E確誁E,
+      "name": "青年部の自家用車の確認",
       "deadline": "",
-      "assignee": "会訁E,
+      "assignee": "会計",
       "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t23",
       
-      "name": "青年部裏方役割決めE,
+      "name": "青年部裏方役割決め",
       "deadline": "",
       "assignee": "生活",
       "memo": "", "fileUrl": "", "completed": false
@@ -1480,30 +1479,30 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "t24",
       
-      "name": "青年部の裏方企画の冁E��決めE,
+      "name": "青年部の裏方企画の内容決め",
       "deadline": "",
-      "assignee": "勉強企E,
+      "assignee": "勉強会",
       "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t25",
       
-      "name": "センターへの手土産購入�E�E,500冁E��度�E�E,
+      "name": "センターへの手土産購入（1,500円程度）",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t26",
       
-      "name": "ガソリン満タンでの依頼筁E,
+      "name": "ガソリン満タンでの依頼等",
       "deadline": "",
-      "assignee": "会訁E,
+      "assignee": "会計",
       "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "t27",
       
-      "name": "スタチE��打ち合わせ実施",
+      "name": "スタッフ打ち合わせ実施",
       "deadline": "",
       "assignee": "生活",
       "memo": "", "fileUrl": "", "completed": false
@@ -1511,14 +1510,14 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "p1",
       
-      "name": "食事�E物品注斁E��の作�E",
+      "name": "食事・物品注文書の作成",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "p2",
       
-      "name": "食物アレルギー事前確認票の作�E",
+      "name": "食物アレルギー事前確認票の作成",
       "deadline": "",
       "assignee": "生活",
       "memo": "", "fileUrl": "", "completed": false
@@ -1526,28 +1525,28 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "p3",
       
-      "name": "施設との事前打合ぁE,
+      "name": "施設との事前打合せ",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "p4",
       
-      "name": "宿泊利用老E��名簿の提�E",
+      "name": "宿泊利用者等名簿の提出",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "p5",
       
-      "name": "入所時確認票の提�E",
+      "name": "入所時確認票の提出",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "p6",
       
-      "name": "救急セチE��、体温計、おぁE��処琁E��チE��の準備",
+      "name": "救急セット、体温計、おう吐処理セットの準備",
       "deadline": "当日まで",
       "assignee": "保健",
       "memo": "", "fileUrl": "", "completed": false
@@ -1555,21 +1554,21 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "f1",
       
-      "name": "【�E体】林間学校 備品リスト�E作�E",
+      "name": "【全体】林間学校 備品リストの作成",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "f2",
       
-      "name": "事前チェチE��シート�E作�E",
+      "name": "事前チェックシートの作成",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "f3",
       
-      "name": "宿泊棟別�E�部屋別�E�記�E表の作�E",
+      "name": "宿泊棟別（部屋別）記入表の作成",
       "deadline": "",
       "assignee": "生活",
       "memo": "", "fileUrl": "", "completed": false
@@ -1577,21 +1576,21 @@ const DEFAULT_DATA: AppData = {
     {
       "id": "f4",
       
-      "name": "駐車許可証の作�E",
+      "name": "駐車許可証の作成",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "f5",
       
-      "name": "【保護老E��ンケート】�E作�E",
+      "name": "【保護者アンケート】の作成",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     },
     {
       "id": "f6",
       
-      "name": "【裏方スタチE��】アンケート�E作�E",
+      "name": "【裏方スタッフ】アンケートの作成",
       "deadline": "",
       "assignee": "全員", "memo": "", "fileUrl": "", "completed": false
     }
@@ -1622,7 +1621,7 @@ export type Settings = { viewerPassword: string };
 
 export async function loginAsViewer(password: string) {
   try {
-    if (!redisUrl) return { success: false, error: 'Redis URL (KV_REST_API_URL) が設定されてぁE��せん' };
+    if (!redisUrl) return { success: false, error: 'Redis URL (KV_REST_API_URL) が設定されていません' };
     const settings = await redis.get<Settings>("rinkan_settings_v6") || { viewerPassword: 'kansai2026' };
     if (password === settings.viewerPassword) {
       const sessionId = Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -1630,15 +1629,15 @@ export async function loginAsViewer(password: string) {
       (await cookies()).set('session', sessionId, { httpOnly: true, secure: true, maxAge: 60 * 60 * 24 * 7, path: '/' });
       return { success: true };
     }
-    return { success: false, error: 'パスワードが間違ってぁE��ぁE };
+    return { success: false, error: 'パスワードが間違っています' };
   } catch (e: any) {
-    return { success: false, error: 'サーバ�Eエラー: ' + e.message };
+    return { success: false, error: 'サーバーエラー: ' + e.message };
   }
 }
 
 export async function loginAsAdmin(username: string, password: string) {
   try {
-    if (!redisUrl) return { success: false, error: 'Redis URL (KV_REST_API_URL) が設定されてぁE��せん' };
+    if (!redisUrl) return { success: false, error: 'Redis URL (KV_REST_API_URL) が設定されていません' };
     let users = await redis.get<User[]>("rinkan_users_v6");
     if (!users || users.length === 0) {
       users = [{ id: 'admin_1', username: 'admin', password: 'kansai2026', role: 'admin' }];
@@ -1652,9 +1651,9 @@ export async function loginAsAdmin(username: string, password: string) {
       (await cookies()).set('session', sessionId, { httpOnly: true, secure: true, maxAge: 60 * 60 * 24 * 7, path: '/' });
       return { success: true };
     }
-    return { success: false, error: 'IDまた�Eパスワードが間違ってぁE��ぁE };
+    return { success: false, error: 'IDまたはパスワードが間違っています' };
   } catch (e: any) {
-    return { success: false, error: 'サーバ�Eエラー: ' + e.message };
+    return { success: false, error: 'サーバーエラー: ' + e.message };
   }
 }
 
@@ -1680,7 +1679,7 @@ export async function getUsers() {
 
 export async function addUser(username: string, password: string, name?: string, role: string = 'admin') {
   const users = await getUsers();
-  if (users.find(u => u.username === username)) return { success: false, error: '既に存在するIDでぁE };
+  if (users.find(u => u.username === username)) return { success: false, error: '既に存在するIDです' };
   users.push({ id: 'u' + Date.now(), username, password, role, name });
   await redis.set("rinkan_users_v6", users);
   revalidatePath('/');
@@ -1689,7 +1688,7 @@ export async function addUser(username: string, password: string, name?: string,
 
 export async function deleteUser(id: string) {
   let users = await getUsers();
-  if (users.length <= 1) return { success: false, error: '最後�E管琁E��E�E削除できません' };
+  if (users.length <= 1) return { success: false, error: '最後の管理者は削除できません' };
   users = users.filter(u => u.id !== id);
   await redis.set("rinkan_users_v6", users);
   revalidatePath('/');
@@ -1714,7 +1713,7 @@ export async function checkInviteToken(token: string) {
 
 export async function registerWithToken(token: string, username: string, password: string, name: string) {
   const role = await checkInviteToken(token);
-  if (!role) return { success: false, error: '招征E��ンクが無効か、期限�EれでぁE };
+  if (!role) return { success: false, error: '招待リンクが無効か、期限切れです' };
   
   const res = await addUser(username, password, name, role);
   if (res.success) {
@@ -1740,4 +1739,3 @@ export async function getViewerPassword() {
   const settings = await redis.get<{viewerPassword: string}>('rinkan_settings_v6');
   return settings?.viewerPassword || 'kansai2026';
 }
-

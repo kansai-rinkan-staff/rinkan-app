@@ -1,5 +1,4 @@
-/* eslint-disable */
-"use client";
+ï»¿"use client";
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { loginAsViewer, loginAsAdmin } from '../actions';
@@ -49,20 +48,20 @@ export default function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">ƒXƒ^ƒbƒtê—pi‰{——j</h2>
-          <p className="text-slate-500 mb-8">ƒXƒPƒWƒ…[ƒ‹‚âƒ^ƒXƒN‚ÌŠm”F‚Ì‚Ýs‚¤•û‚Í‚±‚¿‚ç</p>
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">ã‚¹ã‚¿ãƒƒãƒ•å°‚ç”¨ï¼ˆé–²è¦§ï¼‰</h2>
+          <p className="text-slate-500 mb-8">ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚„ã‚¿ã‚¹ã‚¯ã®ç¢ºèªã®ã¿è¡Œã†æ–¹ã¯ã“ã¡ã‚‰</p>
           
           <form onSubmit={handleViewerLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">‰{———pƒpƒXƒ[ƒh</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">é–²è¦§ç”¨ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰</label>
               <input 
                 type="password" required value={viewerPwd} onChange={e => setViewerPwd(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none"
-                placeholder="ƒpƒXƒ[ƒh‚ð“ü—Í"
+                placeholder="ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’å…¥åŠ›"
               />
             </div>
             <button disabled={loading} className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-colors">
-              ‰{——ƒ‚[ƒh‚Å“ü‚é
+              é–²è¦§ãƒ¢ãƒ¼ãƒ‰ã§å…¥ã‚‹
             </button>
           </form>
         </motion.div>
@@ -76,28 +75,28 @@ export default function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">ŠÇ—ŽÒƒƒOƒCƒ“</h2>
-          <p className="text-slate-500 mb-8">—\’è‚Ì•ÒW‚âƒ^ƒXƒN‚ÌŠ®—¹‘€ì‚ðs‚¤•û‚Í‚±‚¿‚ç</p>
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">ç®¡ç†è€…ãƒ­ã‚°ã‚¤ãƒ³</h2>
+          <p className="text-slate-500 mb-8">äºˆå®šã®ç·¨é›†ã‚„ã‚¿ã‚¹ã‚¯ã®å®Œäº†æ“ä½œã‚’è¡Œã†æ–¹ã¯ã“ã¡ã‚‰</p>
           
           <form onSubmit={handleAdminLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">ŠÇ—ŽÒID</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">ç®¡ç†è€…ID</label>
               <input 
                 type="text" required value={adminId} onChange={e => setAdminId(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none"
-                placeholder="ID‚ð“ü—Í"
+                placeholder="IDã‚’å…¥åŠ›"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">ƒpƒXƒ[ƒh</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰</label>
               <input 
                 type="password" required value={adminPwd} onChange={e => setAdminPwd(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none"
-                placeholder="ƒpƒXƒ[ƒh‚ð“ü—Í"
+                placeholder="ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’å…¥åŠ›"
               />
             </div>
             <button disabled={loading} className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-colors">
-              ŠÇ—ŽÒ‚Æ‚µ‚ÄƒƒOƒCƒ“
+              ç®¡ç†è€…ã¨ã—ã¦ãƒ­ã‚°ã‚¤ãƒ³
             </button>
           </form>
         </motion.div>
@@ -106,4 +105,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

@@ -1,26 +1,29 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(req: NextRequest) {
-  const basicAuth = req.headers.get('authorization');
-  
-  if (basicAuth) {
-    const authValue = basicAuth.split(' ')[1];
-    const [user, pwd] = atob(authValue).split(':');
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-    if (user === 'rinkan' && pwd === 'kansai2026') {
-      return NextResponse.next();
-    }
+  if (
+    pathname === '/login' ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/favicon.ico') ||
+    pathname.match(/\.(png|jpg|jpeg|svg|gif)$/)
+  ) {
+    return NextResponse.next();
   }
 
-  return new NextResponse('Unauthorized.', {
-    status: 401,
-    headers: {
-      'WWW-Authenticate': 'Basic realm="Secure Area"',
-    },
-  });
+  const session = req.cookies.get('session');
+  
+  if (!session) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/login';
+    return NextResponse.redirect(url);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: '/:path*',
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

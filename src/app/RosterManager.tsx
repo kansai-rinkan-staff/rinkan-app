@@ -15,7 +15,7 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 }
 
 type Category = 'roster' | 'groups' | 'duties';
-type Mode = 'dashboard' | 'manage' | 'export' | 'life' | 'study' | 'room' | 'car' | 'youthRole' | 'studentRole';
+type Mode = 'dashboard' | 'manage' | 'export' | 'life' | 'study' | 'room' | 'car' | 'youthRole' | 'studentRole' | 'roomYouth';
 
 type RosterManagerProps = {
   category: Category;
@@ -68,6 +68,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
 
   const [searchQuery, setSearchQuery] = useState('');
   const [editingParticipant, setEditingParticipant] = useState<Participant | null>(null);
+  const [rosterTab, setRosterTab] = useState<'student' | 'youth'>('student');
   
   // Find duplicates
   const getDuplicates = () => {
@@ -83,17 +84,29 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
 
   const handleMergeDuplicates = (group: Participant[]) => {
     if(confirm(`${group[0].name} が ${group.length} 件重複しています。1件に統合しますか？`)) {
-      const primary = group[0];
+      // Sort the group so the newest record is first
+      // We check raw['タイムスタンプ'] (from Google Forms) or fallback to ID timestamp
+      const sortedGroup = [...group].sort((a, b) => {
+        const timeA = new Date(a.raw['タイムスタンプ'] || Number(a.id.split('_')[1]) || 0).getTime();
+        const timeB = new Date(b.raw['タイムスタンプ'] || Number(b.id.split('_')[1]) || 0).getTime();
+        return timeB - timeA;
+      });
+      
+      const primary = sortedGroup[0];
       const mergedAllocations = {};
-      group.forEach(p => {
+      
+      // We apply allocations from oldest to newest so the newest allocations win,
+      // but if a field is null/undefined in newest, we keep the older one.
+      sortedGroup.slice().reverse().forEach(p => {
         Object.assign(mergedAllocations, p.allocations);
       });
       primary.allocations = mergedAllocations;
-      const idsToRemove = group.slice(1).map(p => p.id);
+      
+      const idsToRemove = sortedGroup.slice(1).map(p => p.id);
       const newParticipants = participants.filter(p => !idsToRemove.includes(p.id));
       const finalParticipants = newParticipants.map(p => p.id === primary.id ? primary : p);
       updateParticipants(finalParticipants);
-      toast.success('重複を統合しました');
+      toast.success('最も新しいデータで重複を統合しました');
     }
   };
 
@@ -152,7 +165,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
     const cars = d.cars || [];
     const youthRoles = [
       {id:'保健', name:'保健'},{id:'お茶', name:'お茶'},{id:'生活', name:'生活'},
-      {id:'飯・キャ', name:'飯・キャ'},{id:'見守り', name:'見守り'}
+      {id:'飯・キャ', name:'飯・キャ'},{id:'見守り', name:'見守り'},{id:'学生部付き', name:'学生部付き'}
     ];
     const studentRoles = d.studentRoles || [];
 
@@ -352,8 +365,10 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
     allowRoleToggles: 'life' | 'room' | 'none' = 'none'
   ) => {
     let unassigned = participants.filter(p => !p.allocations[allocationKey]);
-    if (allocationKey === 'youthRole') unassigned = unassigned.filter(p => p.type === 'youth');
-    if (allocationKey === 'studentRole' || allocationKey === 'studyGroup') unassigned = unassigned.filter(p => p.type === 'student');
+    // Group categories (Students only)
+    if (category === 'groups') unassigned = unassigned.filter(p => p.type === 'student');
+    // Duties categories (Youth/General only)
+    if (category === 'duties') unassigned = unassigned.filter(p => p.type === 'youth');
     
     return (
       <div className="flex flex-col lg:flex-row gap-6 min-h-[60vh] w-full items-start">
@@ -615,6 +630,36 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                       </div>
                     </div>
                   </div>
+
+                  <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div className="text-slate-500 font-bold mb-4 text-center">男女比 (学生部)</div>
+                    <div className="flex justify-between items-center px-4">
+                      <div className="text-center">
+                        <div className="text-3xl font-black text-blue-500">{participants.filter(p => p.type === 'student' && p.gender === '男').length}</div>
+                        <div className="text-sm font-bold text-slate-400 mt-1">男子</div>
+                      </div>
+                      <div className="h-12 w-px bg-slate-200"></div>
+                      <div className="text-center">
+                        <div className="text-3xl font-black text-rose-500">{participants.filter(p => p.type === 'student' && p.gender === '女').length}</div>
+                        <div className="text-sm font-bold text-slate-400 mt-1">女子</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                    <div className="text-slate-500 font-bold mb-4 text-center">男女比 (青年部・一般)</div>
+                    <div className="flex justify-between items-center px-4">
+                      <div className="text-center">
+                        <div className="text-3xl font-black text-blue-500">{participants.filter(p => p.type === 'youth' && p.gender === '男').length}</div>
+                        <div className="text-sm font-bold text-slate-400 mt-1">男性</div>
+                      </div>
+                      <div className="h-12 w-px bg-slate-200"></div>
+                      <div className="text-center">
+                        <div className="text-3xl font-black text-rose-500">{participants.filter(p => p.type === 'youth' && p.gender === '女').length}</div>
+                        <div className="text-sm font-bold text-slate-400 mt-1">女性</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
                 {participants.filter(p => p.type === 'student').length > 0 && (
@@ -733,11 +778,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="flex-1 p-3 rounded-xl border border-slate-200 outline-none focus:border-blue-500 transition-colors"
                     />
-                    {role !== 'viewer' && (
-                    <button onClick={() => setEditingParticipant({id: 'new_'+Date.now(), type: 'student', name: '', gender: '男', grade: '小1', raw: {}, allocations: {}})} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl flex items-center gap-2 transition-colors">
-                      <Plus size={18}/> 新規追加
-                    </button>
-                    )}
+                    
                   </div>
                   
                   <div className="overflow-x-auto rounded-xl border border-slate-200">
@@ -747,7 +788,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                           <th className="p-4 font-bold border-b border-slate-200">氏名</th>
                           <th className="p-4 font-bold border-b border-slate-200">所属</th>
                           <th className="p-4 font-bold border-b border-slate-200">学年/性別</th>
-                          {role === 'admin' && <th className="p-4 font-bold border-b border-slate-200 w-24">操作</th>}
+                          
                         </tr>
                       </thead>
                       <tbody>
@@ -900,7 +941,10 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
               </div>
             )}
             <div className="mb-4 text-sm font-bold text-slate-500 bg-slate-50 p-3 rounded-xl inline-block border border-slate-200">※ 行程表の主要役割と連動しています。枠の並べ替えも可能です。</div>
-            {renderBoard('youthRole', d.youthRoles || [])}
+            {renderBoard('youthRole', d.youthRoles && d.youthRoles.length > 0 ? d.youthRoles : [
+              {id:'保健', name:'保健'},{id:'お茶', name:'お茶'},{id:'生活', name:'生活'},
+              {id:'飯・キャ', name:'飯・キャ'},{id:'見守り', name:'見守り'},{id:'学生部付き', name:'学生部付き'}
+            ])}
           </div>
         )}
 

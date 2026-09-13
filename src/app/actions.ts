@@ -1625,7 +1625,7 @@ export async function loginAsViewer(password: string) {
     const settings = await redis.get<Settings>("rinkan_settings_v6") || { viewerPassword: 'kansai2026' };
     if (password === settings.viewerPassword) {
       const sessionId = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      await redis.set(`session_${sessionId}`, 'viewer', { ex: 60 * 60 * 24 * 7 });
+      await redis.set(`session_${sessionId}`, 'viewer::閲覧者', { ex: 60 * 60 * 24 * 7 });
       (await cookies()).set('session', sessionId, { httpOnly: true, secure: true, maxAge: 60 * 60 * 24 * 7, path: '/' });
       return { success: true };
     }
@@ -1647,7 +1647,8 @@ export async function loginAsAdmin(username: string, password: string) {
     const user = users.find(u => u.username === username);
     if (user && password === user.password) {
       const sessionId = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      await redis.set(`session_${sessionId}`, 'admin', { ex: 60 * 60 * 24 * 7 });
+      const nameComponent = user.name || user.username || '';
+      await redis.set(`session_${sessionId}`, `${user.role}::${nameComponent}`, { ex: 60 * 60 * 24 * 7 });
       (await cookies()).set('session', sessionId, { httpOnly: true, secure: true, maxAge: 60 * 60 * 24 * 7, path: '/' });
       return { success: true };
     }
@@ -1668,9 +1669,17 @@ export async function logout() {
 
 export async function getSessionRole() {
   const session = (await cookies()).get('session');
-  if (!session) return 'none';
-  const role = await redis.get<string>(`session_${session.value}`);
-  return role || 'none';
+  if (!session) return { role: 'none', name: '' };
+  const data = await redis.get<string>(`session_${session.value}`);
+  if (!data) return { role: 'none', name: '' };
+  
+  if (data.includes('::')) {
+    const [role, name] = data.split('::');
+    return { role: role as 'admin'|'editor'|'viewer'|'none', name };
+  }
+  
+  // Fallback for old sessions
+  return { role: (data === 'admin' || data === 'editor' || data === 'viewer') ? data : 'none', name: '' };
 }
 
 export async function getUsers() {
@@ -1724,7 +1733,7 @@ export async function registerWithToken(token: string, username: string, passwor
 
 
 
-export async function updateUser(id: string, updates: {name?: string, password?: string}) {
+export async function updateUser(id: string, updates: {name?: string, password?: string, role?: string, username?: string}) {
   let users = await getUsers();
   const idx = users.findIndex(u => u.id === id);
   if (idx === -1) return { success: false, error: 'ユーザーが見つかりません' };

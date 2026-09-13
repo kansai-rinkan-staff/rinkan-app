@@ -39,6 +39,7 @@ export default function App() {
   const [activeSetting, setActiveSetting] = useState<'menu'|'font'|'schedule'|'roles'|'tasks'|'accounts'>('menu');
 
   const [taskModal, setTaskModal] = useState<{isOpen: boolean, task: TaskItem | null}>({isOpen: false, task: null});
+  const [userModal, setUserModal] = useState<{isOpen: boolean, user: User | null}>({isOpen: false, user: null});
   const [scheduleModal, setScheduleModal] = useState<{isOpen: boolean, schedule: ScheduleItem | null, editRoleOnly?: string}>({isOpen: false, schedule: null});
   
   useEffect(() => {
@@ -778,7 +779,10 @@ export default function App() {
 
                 {/* Admins List */}
                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                  <h3 className="font-bold text-slate-700 mb-4">アカウント管理</h3>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-slate-700">アカウント管理</h3>
+                    <button onClick={() => setUserModal({isOpen: true, user: null})} className="text-sm bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 hover:bg-slate-200"><Plus size={16}/> 追加</button>
+                  </div>
                   <div className="space-y-3 mb-6">
                     {usersList.map((u: User) => (
                       <div key={u.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200">
@@ -1066,6 +1070,75 @@ function ScheduleModalContent({ scheduleModal, setScheduleModal, selectedDate, e
           <div className="flex justify-end gap-2 pt-4 border-t">
             <button type="button" onClick={() => setScheduleModal({isOpen: false, schedule: null})} className="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100">キャンセル</button>
             <button type="submit" className="px-5 py-2.5 rounded-xl font-bold text-white bg-blue-600">保存する</button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+}
+
+
+function UserModalContent({ userModal, setUserModal, setUsersList }: any) {
+  if (!userModal.isOpen) return null;
+  const isEdit = !!userModal.user;
+  
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl">
+        <h2 className="text-xl font-bold text-slate-800 mb-4">{isEdit ? 'アカウントを編集' : 'アカウントを作成'}</h2>
+        <form onSubmit={async (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.currentTarget);
+          const username = fd.get('username') as string;
+          const password = fd.get('password') as string;
+          const name = fd.get('name') as string;
+          const role = fd.get('role') as string;
+          
+          if (isEdit) {
+            const { updateUser } = await import('./actions');
+            const res = await updateUser(userModal.user.id, { username, name, role, ...(password ? {password} : {}) });
+            if (res.success) {
+              toast.success('更新しました');
+              setUserModal({isOpen: false, user: null});
+              import('./actions').then(m => m.getUsers().then(setUsersList));
+            } else {
+              toast.error(res.error);
+            }
+          } else {
+            const { addUser } = await import('./actions');
+            const res = await addUser(username, password, name, role);
+            if (res.success) {
+              toast.success('作成しました');
+              setUserModal({isOpen: false, user: null});
+              import('./actions').then(m => m.getUsers().then(setUsersList));
+            } else {
+              toast.error(res.error);
+            }
+          }
+        }} className="space-y-4">
+          <div>
+            <label className="block text-sm font-bold text-slate-600 mb-1">表示名</label>
+            <input name="name" defaultValue={userModal.user?.name} required placeholder="例: 山田太郎" className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-slate-600 mb-1">ログインID</label>
+            <input name="username" defaultValue={userModal.user?.username} required placeholder="英数字" className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-slate-600 mb-1">パスワード {isEdit && <span className="text-slate-400 font-normal">(変更する場合のみ)</span>}</label>
+            <input type="password" name="password" required={!isEdit} placeholder={isEdit ? "変更しない場合は空欄" : "パスワード"} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-slate-600 mb-1">権限</label>
+            <select name="role" defaultValue={userModal.user?.role || 'editor'} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none font-bold">
+              <option value="admin">全体管理者</option>
+              <option value="editor">編集者</option>
+            </select>
+          </div>
+          
+          <div className="flex justify-end gap-2 pt-4 border-t mt-4">
+            <button type="button" onClick={() => setUserModal({isOpen: false, user: null})} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">キャンセル</button>
+            <button type="submit" className="px-5 py-2.5 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors">保存する</button>
           </div>
         </form>
       </motion.div>

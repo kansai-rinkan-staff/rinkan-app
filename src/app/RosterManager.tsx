@@ -518,8 +518,8 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
     const modes = category === 'roster'
       ? [{id: 'dashboard', label: 'ダッシュボード'}, {id: 'manage', label: '名簿管理'}, {id: 'export', label: '出力・絞り込み'}]
       : category === 'groups' 
-      ? [{id: 'life', label: '班'}, {id: 'study', label: '勉強会班'}, {id: 'room', label: '部屋割'}]
-      : [{id: 'car', label: '配車'}, {id: 'youthRole', label: '青年部役割'}, {id: 'studentRole', label: '学生部役割'}];
+      ? [{id: 'life', label: '班'}, {id: 'study', label: '勉強会班'}, {id: 'room', label: '部屋割(学生部)'}, {id: 'studentRole', label: '学生部役割'}]
+      : [{id: 'car', label: '配車'}, {id: 'youthRole', label: '青年部・一般役割'}, {id: 'roomYouth', label: '部屋割(青年部・一般)'}];
 
     return (
       <div className="flex gap-2 pb-4 pt-2 -mx-2 px-2 overflow-x-auto hide-scrollbar">

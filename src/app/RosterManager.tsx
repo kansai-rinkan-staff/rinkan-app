@@ -792,7 +792,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                         </tr>
                       </thead>
                       <tbody>
-                        {participants.filter(p => p.name.includes(searchQuery)).map(p => (
+                        {participants.filter(p => p.type === rosterTab && p.name.includes(searchQuery)).map(p => (
                           <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50/50">
                             <td className="p-4 font-bold text-slate-800">{p.name}</td>
                             <td className="p-4">
@@ -815,7 +815,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                             )}
                           </tr>
                         ))}
-                        {participants.filter(p => p.name.includes(searchQuery)).length === 0 && (
+                        {participants.filter(p => p.type === rosterTab && p.name.includes(searchQuery)).length === 0 && (
                           <tr>
                             <td colSpan={role === 'admin' ? 4 : 3} className="p-8 text-center text-slate-500 font-bold">該当する参加者が見つかりません</td>
                           </tr>

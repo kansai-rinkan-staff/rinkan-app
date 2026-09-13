@@ -39,7 +39,7 @@ export default function App() {
   const [activeSetting, setActiveSetting] = useState<'menu'|'font'|'schedule'|'roles'|'tasks'|'accounts'>('menu');
 
   const [taskModal, setTaskModal] = useState<{isOpen: boolean, task: TaskItem | null}>({isOpen: false, task: null});
-  const [scheduleModal, setScheduleModal] = useState<{isOpen: boolean, schedule: ScheduleItem | null}>({isOpen: false, schedule: null});
+  const [scheduleModal, setScheduleModal] = useState<{isOpen: boolean, schedule: ScheduleItem | null, editRoleOnly?: string}>({isOpen: false, schedule: null});
   
   useEffect(() => {
     fetchData();
@@ -378,7 +378,7 @@ export default function App() {
                                 
                                 {role === 'admin' && (
                                   <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-50 hover:opacity-100 transition-opacity">
-                                    <button onClick={() => setScheduleModal({isOpen: true, schedule: item})} className="p-1.5 hover:bg-black/5 rounded-lg"><Edit2 size={16} /></button>
+                                    <button onClick={() => setScheduleModal({isOpen: true, schedule: item, editRoleOnly: note.role})} className="p-1.5 hover:bg-black/5 rounded-lg"><Edit2 size={16} /></button>
                                     <button onClick={() => {
                                       if(confirm(`${note.role} の指示のみを削除しますか？`)) {
                                         const newSchedule = data!.schedule.map((s: ScheduleItem) => {
@@ -410,7 +410,7 @@ export default function App() {
             </div>
             {/* FAB */}
             {role === 'admin' && (
-              <button onClick={() => setScheduleModal({isOpen: true, schedule: null})} className="fixed bottom-24 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform z-30">
+              <button onClick={() => setScheduleModal({isOpen: true, schedule: null})} className="fixed bottom-20 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform z-30">
                 <Plus size={28} />
               </button>
             )}
@@ -557,7 +557,7 @@ export default function App() {
 
             {/* FAB */}
             {role === 'admin' && (
-              <button onClick={() => setTaskModal({isOpen: true, task: null})} className="fixed bottom-24 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform z-30">
+              <button onClick={() => setTaskModal({isOpen: true, task: null})} className="fixed bottom-20 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform z-30">
                 <Plus size={28} />
               </button>
             )}
@@ -975,7 +975,7 @@ function ScheduleModalContent({ scheduleModal, setScheduleModal, selectedDate, e
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold text-slate-800 mb-4">{scheduleModal.schedule ? '行程を編集' : '行程を追加'}</h2>
+        <h2 className="text-xl font-bold text-slate-800 mb-4">{scheduleModal.editRoleOnly ? `${scheduleModal.editRoleOnly}の指示を編集` : scheduleModal.schedule ? '行程を編集' : '行程を追加'}</h2>
         <form onSubmit={(e) => {
           e.preventDefault();
           const fd = new FormData(e.currentTarget);
@@ -1020,7 +1020,7 @@ function ScheduleModalContent({ scheduleModal, setScheduleModal, selectedDate, e
           <div className="border-t pt-4 mt-2">
             <label className="block text-sm font-bold text-slate-600 mb-3">役割ごとの指示</label>
             <div className="space-y-3">
-              {draftRoleNotes.map((note, index) => (
+              {draftRoleNotes.filter(note => !scheduleModal.editRoleOnly || note.role === scheduleModal.editRoleOnly).map((note, index) => (
                 <div key={index} className="flex flex-col gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
                   <div className="flex justify-between items-center">
                     <select 

@@ -917,6 +917,33 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
               </div>
             )}
             {renderBoard('room', getActiveRooms(d), 'room')}
+
+        {mode === 'roomYouth' && (
+          <div className="flex flex-col flex-1">
+            {isEditing && (
+              <div className="mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200 shadow-inner">
+                <div className="font-bold text-sm text-slate-700 mb-3 flex items-center gap-2"><AlertCircle size={16}/> 使用する宿泊棟を選択 (曾爾青少年自然の家)</div>
+                <div className="flex flex-wrap gap-2">
+                  {Object.keys(facilitiesData).map(b => (
+                    <label key={b} className={cn("flex items-center gap-2 px-4 py-2 rounded-xl border-2 cursor-pointer transition-colors font-bold text-sm", (d.activeBuildings || []).includes(b) ? "bg-blue-50 border-blue-600 text-blue-800" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100")}>
+                      <input 
+                        type="checkbox" 
+                        className="hidden"
+                        checked={(d.activeBuildings || []).includes(b)}
+                        onChange={(e) => {
+                          let ab = [...(d.activeBuildings || [])];
+                          if (e.target.checked) ab.push(b);
+                          else ab = ab.filter(x => x !== b);
+                          updateLocal({...d, activeBuildings: ab});
+                        }}
+                      />
+                      {b}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+            {renderBoard('room', getActiveRooms(d), 'room')}
           </div>
         )}
 

@@ -23,6 +23,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   const [role, setRole] = useState<'admin' | 'editor' | 'viewer' | 'none'>('none');
+  const [sessionName, setSessionName] = useState<string>('');
   const [usersList, setUsersList] = useState<User[]>([]);
 
   const [fontSize, setFontSize] = useState<'text-sm' | 'text-base' | 'text-lg'>('text-base');
@@ -48,14 +49,18 @@ export default function App() {
   }, []);
 
   const fetchRole = async () => {
-    const r = await getSessionRole();
-    setRole(r as any);
-    if (r === 'admin') {
+    const r: any = await getSessionRole();
+    const roleValue = typeof r === 'string' ? r : r.role;
+    const nameValue = typeof r === 'string' ? '' : (r.name || '');
+    
+    setRole(roleValue as any);
+    setSessionName(nameValue);
+    
+    if (roleValue === 'admin') {
       getUsers().then(setUsersList).catch(console.error);
     }
-    // Prevent unauthorized access to tabs on mount if somehow state was persisted
-    if ((r === 'viewer' || r === 'none') && currentTab === 'tasks') setCurrentTab('schedule');
-    if (r !== 'admin' && currentTab === 'settings' && activeSetting !== 'menu' && activeSetting !== 'font') { setActiveSetting('menu'); }
+    if ((roleValue === 'viewer' || roleValue === 'none') && currentTab === 'tasks') setCurrentTab('schedule');
+    if (roleValue !== 'admin' && currentTab === 'settings' && activeSetting !== 'menu' && activeSetting !== 'font') { setActiveSetting('menu'); }
   };
 
   const fetchData = async () => {
@@ -228,10 +233,16 @@ export default function App() {
                   </div>
                 </div>
               </div>
-              <div className="p-4 border-t border-slate-100">
-                <button onClick={() => setSidebarOpen(false)} className="w-full py-3 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center gap-2 font-bold justify-center transition-colors">
-                  <X size={20} /> 閉じる
-                </button>
+              <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+                <div>
+                  <div className="text-xs text-slate-400 font-bold mb-0.5">ログイン中</div>
+                  <div className="font-bold text-slate-700 flex items-center gap-2">
+                    {sessionName || 'ゲスト'}
+                    {role === 'admin' && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold">管理者</span>}
+                    {role === 'editor' && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">編集者</span>}
+                    {role === 'viewer' && <span className="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full font-bold">閲覧者</span>}
+                  </div>
+                </div>
               </div>
             </motion.div>
             <div className="flex-1" onClick={() => setSidebarOpen(false)}></div>

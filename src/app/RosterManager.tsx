@@ -833,7 +833,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                 }} className="bg-slate-100 hover:bg-red-100 hover:text-red-700 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors"><Trash2 size={16}/> 1班減らす</button>
               </div>
             )}
-            {renderBoard('lifeGroup', d.lifeGroups || Array.from({length: 6}, (_, i) => ({ id: `life_${i+1}`, name: `${i+1}班` })), 'life')}
+            {renderBoard('group', d.lifeGroups || Array.from({length: 6}, (_, i) => ({ id: `life_${i+1}`, name: `${i+1}班` })), 'life')}
           </div>
         )}
 

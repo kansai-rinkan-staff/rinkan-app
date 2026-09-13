@@ -266,7 +266,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
   };
   const handleDrop = (e: React.DragEvent, bucketId: string, allocationKey: keyof Participant['allocations']) => {
     e.preventDefault();
-    if (role !== 'admin' || !isEditing) return;
+    if (role === 'viewer' || !isEditing) return;
     
     const dataStr = e.dataTransfer.getData('text/plain');
     if (!dataStr) return;
@@ -371,7 +371,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
             {unassigned.map(p => (
               <div 
                 key={p.id} 
-                draggable={role === 'admin' && isEditing}
+                draggable={role !== 'viewer' && isEditing}
                 onDragStart={(e) => handleDragStart(e, p.id)}
                 className={cn("bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center", isEditing ? "cursor-grab active:cursor-grabbing hover:border-blue-300 hover:shadow-md transition-all" : "")}
               >
@@ -419,7 +419,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                   {assigned.map(p => (
                     <div 
                       key={p.id}
-                      draggable={role === 'admin' && isEditing}
+                      draggable={role !== 'viewer' && isEditing}
                       onDragStart={(e) => handleDragStart(e, p.id)}
                       className={cn("bg-slate-50 p-3 rounded-xl border border-slate-200 group relative", isEditing ? "cursor-grab active:cursor-grabbing hover:border-blue-300 hover:shadow-md transition-all" : "")}
                     >
@@ -553,7 +553,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
               </button>
             )}
             
-            {role === 'admin' && (
+            {role !== 'viewer' && (
               <>
                 {!isEditing ? (
                   <button onClick={() => setIsEditing(true)} className="bg-white border-2 border-blue-600 text-blue-600 px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-blue-50 transition-colors shadow-sm">
@@ -561,11 +561,11 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                   </button>
                 ) : (
                   <>
-                    <button onClick={handleSave} className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm">
-                      <Save size={16}/> 保存
-                    </button>
                     <button onClick={() => {setIsEditing(false); setLocalData(data);}} className="bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-300 transition-colors">
                       キャンセル
+                    </button>
+                    <button onClick={handleSave} className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm">
+                      <Save size={16}/> 保存
                     </button>
                   </>
                 )}
@@ -645,7 +645,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
             {mode === 'manage' && (
               <div className="space-y-8">
                 {/* Upload Section */}
-                {role === 'admin' && (
+                {role !== 'viewer' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Student Upload */}
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden group hover:border-emerald-200 transition-colors">
@@ -713,7 +713,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                               <span className="font-bold text-slate-800">{group[0].name}</span>
                               <span className="text-xs text-slate-500 ml-2">({group.length}件のデータ)</span>
                             </div>
-                            {role === 'admin' && (
+                            {role !== 'viewer' && (
                             <button onClick={() => handleMergeDuplicates(group)} className="text-sm font-bold bg-rose-100 hover:bg-rose-200 text-rose-700 px-4 py-2 rounded-lg transition-colors">
                               統合する
                             </button>
@@ -733,7 +733,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="flex-1 p-3 rounded-xl border border-slate-200 outline-none focus:border-blue-500 transition-colors"
                     />
-                    {role === 'admin' && (
+                    {role !== 'viewer' && (
                     <button onClick={() => setEditingParticipant({id: 'new_'+Date.now(), type: 'student', name: '', gender: '男', grade: '小1', raw: {}, allocations: {}})} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 rounded-xl flex items-center gap-2 transition-colors">
                       <Plus size={18}/> 新規追加
                     </button>
@@ -760,7 +760,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                               </span>
                             </td>
                             <td className="p-4 text-sm text-slate-600 font-medium">{p.grade} / {p.gender}</td>
-                            {role === 'admin' && (
+                            {role !== 'viewer' && (
                             <td className="p-4">
                               <div className="flex gap-2">
                                 <button onClick={() => setEditingParticipant(p)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit2 size={16}/></button>
@@ -833,7 +833,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                 }} className="bg-slate-100 hover:bg-red-100 hover:text-red-700 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors"><Trash2 size={16}/> 1班減らす</button>
               </div>
             )}
-            {renderBoard('group', d.lifeGroups || Array.from({length: 6}, (_, i) => ({ id: `life_${i+1}`, name: `${i+1}班` })), 'life')}
+            {renderBoard('lifeGroup', d.lifeGroups || Array.from({length: 6}, (_, i) => ({ id: `life_${i+1}`, name: `${i+1}班` })), 'life')}
           </div>
         )}
 

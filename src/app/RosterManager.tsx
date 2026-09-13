@@ -28,6 +28,7 @@ type RosterManagerProps = {
 export default function RosterManager({ category, data, setData, saveAppData, role }: RosterManagerProps) {
   const defaultMode = category === 'roster' ? 'dashboard' : category === 'groups' ? 'life' : 'car';
   const [mode, setMode] = useState<Mode>(defaultMode);
+  const [pendingMode, setPendingMode] = useState<Mode | null>(null);
   
   // Ensure mode matches category on unmount/mount
   useEffect(() => {
@@ -528,11 +529,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
             key={m.id}
             onClick={() => {
               if (isEditing) {
-                if(confirm('編集中の内容は破棄されます。よろしいですか？')) {
-                  setIsEditing(false);
-                  setLocalData(data);
-                  setMode(m.id as Mode);
-                }
+                setPendingMode(m.id as Mode);
               } else {
                 setMode(m.id as Mode);
               }
@@ -1039,6 +1036,29 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
           </div>
         )}
       </AnimatePresence>
+    
+      {/* Pending Mode Change Modal */}
+      <AnimatePresence>
+        {pendingMode && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+              <div className="flex items-center gap-3 text-rose-600 mb-4">
+                <AlertCircle size={24} />
+                <h3 className="font-bold text-lg text-slate-800">確認</h3>
+              </div>
+              <p className="text-slate-600 font-medium mb-6">編集中の内容は破棄されます。よろしいですか？</p>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setPendingMode(null)} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">キャンセル</button>
+                <button onClick={() => {
+                  setIsEditing(false);
+                  setLocalData(data);
+                  setMode(pendingMode);
+                  setPendingMode(null);
+                }} className="px-5 py-2.5 rounded-xl font-bold bg-rose-500 text-white hover:bg-rose-600 shadow-sm transition-colors">破棄して移動</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
-  );
-}

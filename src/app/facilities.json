@@ -1,0 +1,338 @@
+{
+  "さかな棟": [
+    {
+      "floor": "1階",
+      "name": "あぶらはや（リーダー室）",
+      "capacity": 4
+    },
+    {
+      "floor": "1階",
+      "name": "うなぎ",
+      "capacity": 6
+    },
+    {
+      "floor": "1階",
+      "name": "おいかわ",
+      "capacity": 6
+    },
+    {
+      "floor": "1階",
+      "name": "かわむつ",
+      "capacity": 6
+    },
+    {
+      "floor": "1階",
+      "name": "こい",
+      "capacity": 6
+    },
+    {
+      "floor": "2階",
+      "name": "あゆ（リーダー室）",
+      "capacity": 4
+    },
+    {
+      "floor": "2階",
+      "name": "どじょう",
+      "capacity": 6
+    },
+    {
+      "floor": "2階",
+      "name": "なまず",
+      "capacity": 6
+    },
+    {
+      "floor": "2階",
+      "name": "ふな",
+      "capacity": 6
+    },
+    {
+      "floor": "2階",
+      "name": "ます",
+      "capacity": 6
+    }
+  ],
+  "きのこ棟": [
+    {
+      "floor": "１階",
+      "name": "さくらたけ",
+      "capacity": 8
+    },
+    {
+      "floor": "１階",
+      "name": "しいたけ",
+      "capacity": 8
+    },
+    {
+      "floor": "１階",
+      "name": "えのきだけ（リーダー室）",
+      "capacity": 4
+    },
+    {
+      "floor": "2階",
+      "name": "ならたけ",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "ひとよたけ",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "かわらたけ（リーダー室）",
+      "capacity": 4
+    },
+    {
+      "floor": "3階",
+      "name": "ほんしめじ",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "まいたけ",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "こがねたけ（リーダー室）",
+      "capacity": 4
+    }
+  ],
+  "はな棟": [
+    {
+      "floor": "１階",
+      "name": "おみなえし",
+      "capacity": 8
+    },
+    {
+      "floor": "１階",
+      "name": "ききょう",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "さわぎきょう",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "なでしこ",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "うめばちそう（リーダー室）",
+      "capacity": 4
+    },
+    {
+      "floor": "3階",
+      "name": "のあざみ",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "りんどう",
+      "capacity": 8
+    }
+  ],
+  "むし棟": [
+    {
+      "floor": "１階",
+      "name": "きあげは",
+      "capacity": 8
+    },
+    {
+      "floor": "１階",
+      "name": "くわがた",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "こおろぎ",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "すずむし",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "かぶとむし（リーダー室）",
+      "capacity": 4
+    },
+    {
+      "floor": "3階",
+      "name": "てんとうむし",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "ばった",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "かまきり（リーダー室）",
+      "capacity": 4
+    }
+  ],
+  "とり棟": [
+    {
+      "floor": "１階",
+      "name": "うぐいす",
+      "capacity": 8
+    },
+    {
+      "floor": "１階",
+      "name": "かっこう",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "きじ",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "つばめ",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "ほととぎす",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "やまがら",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "あかげら（リーダー室）",
+      "capacity": 4
+    }
+  ],
+  "そら棟": [
+    {
+      "floor": "1階",
+      "name": "あめ",
+      "capacity": 8
+    },
+    {
+      "floor": "1階",
+      "name": "かげろう",
+      "capacity": 8
+    },
+    {
+      "floor": "1階",
+      "name": "かぜ",
+      "capacity": 8
+    },
+    {
+      "floor": "1階",
+      "name": "きり",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "あさひ（リーダー室）",
+      "capacity": 6
+    },
+    {
+      "floor": "3階",
+      "name": "くも",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "にじ",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "ゆうやけ",
+      "capacity": 8
+    },
+    {
+      "floor": "3階",
+      "name": "ゆき",
+      "capacity": 8
+    }
+  ],
+  "もり棟": [
+    {
+      "floor": "1階",
+      "name": "けやき",
+      "capacity": 8
+    },
+    {
+      "floor": "1階",
+      "name": "こなら",
+      "capacity": 8
+    },
+    {
+      "floor": "1階",
+      "name": "くろまつ（リーダー室）",
+      "capacity": 4
+    },
+    {
+      "floor": "2階",
+      "name": "しらかんば",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "すぎ",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "ひのき",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "やまざくら",
+      "capacity": 8
+    }
+  ],
+  "ほし棟": [
+    {
+      "floor": "1階",
+      "name": "いてざ",
+      "capacity": 8
+    },
+    {
+      "floor": "1階",
+      "name": "おおいぬざ",
+      "capacity": 8
+    },
+    {
+      "floor": "1階",
+      "name": "アンドロメダ（リーダー室）",
+      "capacity": 4
+    },
+    {
+      "floor": "2階",
+      "name": "おとめざ",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "オリオンざ",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "カシオペアざ",
+      "capacity": 8
+    },
+    {
+      "floor": "2階",
+      "name": "はくちょうざ",
+      "capacity": 8
+    }
+  ]
+}

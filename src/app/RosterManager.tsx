@@ -196,8 +196,16 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
         '勉強会班': getName(studyGroups, p.allocations.studyGroup)
       })).sort((a, b) => String(a['勉強会班'] || '').localeCompare(String(b['勉強会班'] || '')));
     } else if (mode === 'room') {
-      sheetName = "部屋割";
-      exportData = participants.filter(p => p.allocations.room).map(p => ({
+      sheetName = "部屋割(学生部)";
+      exportData = participants.filter(p => p.type === 'student' && p.allocations.room).map(p => ({
+        '氏名': p.name,
+        '性別': p.gender,
+        '部屋': getName(rooms, p.allocations.room),
+        '役職': p.allocations.roomRole === 'room_leader' ? '室長' : ''
+      })).sort((a, b) => String(a['部屋'] || '').localeCompare(String(b['部屋'] || '')));
+    } else if (mode === 'roomYouth') {
+      sheetName = "部屋割(青年部・一般)";
+      exportData = participants.filter(p => p.type === 'youth' && p.allocations.room).map(p => ({
         '氏名': p.name,
         '性別': p.gender,
         '部屋': getName(rooms, p.allocations.room),

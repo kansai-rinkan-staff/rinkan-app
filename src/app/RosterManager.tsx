@@ -914,6 +914,8 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
               </div>
             )}
             {renderBoard('room', getActiveRooms(d), 'room')}
+          </div>
+        )}
 
         {mode === 'roomYouth' && (
           <div className="flex flex-col flex-1">
@@ -1062,3 +1064,5 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
       </AnimatePresence>
 
     </div>
+  );
+}

@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 function cn(...inputs: (string | undefined | null | false)[]) { return twMerge(clsx(inputs)); }
 import * as XLSX from 'xlsx';
+import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
 
 export default function AccountingManager({ data, setData, updateData }: Props) {
   const [activeAccount, setActiveAccount] = useState<string>('all');
+  const [globalConfirm, setGlobalConfirm] = useState<{isOpen: boolean, message: string, onConfirm: () => void}>({isOpen: false, message: '', onConfirm: () => {}});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');

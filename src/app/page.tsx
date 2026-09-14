@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { Menu, RotateCw, CloudRain, Home, Edit2, Check, X, Plus, Calendar, CheckSquare, Clock, Settings, Users, Eye, Shield, Edit3, UserPlus, Link2, Copy, Component, Car, LogOut, Type, Trash2, CalendarDays, Link as LinkIcon, FileText, ChevronLeft, ChevronRight, AlignLeft, Download } from 'lucide-react';
+import { AlertCircle, Menu, RotateCw, CloudRain, Home, Edit2, Check, X, Plus, Calendar, CheckSquare, Clock, Settings, Users, Eye, Shield, Edit3, UserPlus, Link2, Copy, Component, Car, LogOut, Type, Trash2, CalendarDays, Link as LinkIcon, FileText, ChevronLeft, ChevronRight, AlignLeft, Download } from 'lucide-react';
 import { getAppData, saveAppData, AppData, ScheduleItem, TaskItem, getSessionRole, logout, getUsers, addUser, deleteUser, updateViewerPassword, generateInviteToken, getViewerPassword, User } from './actions';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -935,7 +935,7 @@ export default function App() {
                           <div className="text-xs text-slate-400 font-medium mt-0.5">ID: {u.username}</div>
                         </div>
                         <button onClick={async () => {
-                          setGlobalConfirm({ isOpen: true, message: u.username + 'を削除しますか？', onConfirm: () => {
+                          setGlobalConfirm({ isOpen: true, message: u.username + 'を削除しますか？', onConfirm: async () => {
                             const res = await deleteUser(u.id);
                             if (res.success) getUsers().then(setUsersList);
                             else toast.error(res.error);
@@ -1040,7 +1040,7 @@ export default function App() {
                 readOnly 
                 value={globalPrompt.value} 
                 className="w-full h-32 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono text-slate-700 outline-none resize-none mb-6"
-                onClick={(e) => e.target.select()}
+                onClick={(e) => (e.target as HTMLTextAreaElement).select()}
               />
               <div className="flex justify-end gap-3">
                 <button onClick={() => setGlobalPrompt({isOpen: false, message: '', value: ''})} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">閉じる</button>

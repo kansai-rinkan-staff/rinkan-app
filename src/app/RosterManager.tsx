@@ -36,6 +36,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
   }, [category]);
 
   // Edit mode state
+  const [globalConfirm, setGlobalConfirm] = useState<{isOpen: boolean, message: string, onConfirm: () => void}>({isOpen: false, message: '', onConfirm: () => {}});
   const [isEditing, setIsEditing] = useState(false);
   const [localData, setLocalData] = useState<AppData>(data);
   const [modal, setModal] = useState<{isOpen: boolean, type: 'study'|'car'|'studentRole'|'youthRole', name: string, capacity: string}>({isOpen: false, type: 'study', name: '', capacity: ''});
@@ -84,7 +85,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
   const duplicates = getDuplicates();
 
   const handleMergeDuplicates = (group: Participant[]) => {
-    if(confirm(`${group[0].name} が ${group.length} 件重複しています。1件に統合しますか？`)) {
+    setGlobalConfirm({ isOpen: true, message: `${group[0].name} が ${group.length} 件重複しています。1件に統合しますか？`, onConfirm: () => {
       // Sort the group so the newest record is first
       // We check raw['タイムスタンプ'] (from Google Forms) or fallback to ID timestamp
       const sortedGroup = [...group].sort((a, b) => {
@@ -108,7 +109,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
       const finalParticipants = newParticipants.map(p => p.id === primary.id ? primary : p);
       updateParticipants(finalParticipants);
       toast.success('最も新しいデータで重複を統合しました');
-    }
+    } });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, pType: 'student' | 'youth') => {
@@ -824,9 +825,9 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                               <div className="flex gap-2">
                                 <button onClick={() => setEditingParticipant(p)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit2 size={16}/></button>
                                 <button onClick={() => {
-                                  if(confirm(p.name + ' を削除しますか？')) {
+                                  setGlobalConfirm({ isOpen: true, message: p.name + ' を削除しますか？', onConfirm: () => {
                                     updateParticipants(participants.filter(x => x.id !== p.id));
-                                  }
+                                  } });
                                 }} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={16}/></button>
                               </div>
                             </td>
@@ -1078,6 +1079,29 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                   setMode(pendingMode);
                   setPendingMode(null);
                 }} className="px-5 py-2.5 rounded-xl font-bold bg-rose-500 text-white hover:bg-rose-600 shadow-sm transition-colors">破棄して移動</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+
+      {/* Global Confirm Modal */}
+      <AnimatePresence>
+        {globalConfirm.isOpen && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+              <div className="flex items-center gap-3 text-rose-600 mb-4">
+                <AlertCircle size={24} />
+                <h3 className="font-bold text-lg text-slate-800">確認</h3>
+              </div>
+              <p className="text-slate-600 font-medium mb-6 whitespace-pre-wrap">{globalConfirm.message}</p>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}})} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">キャンセル</button>
+                <button onClick={() => {
+                  globalConfirm.onConfirm();
+                  setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}});
+                }} className="px-5 py-2.5 rounded-xl font-bold bg-rose-500 text-white hover:bg-rose-600 shadow-sm transition-colors">実行する</button>
               </div>
             </motion.div>
           </div>

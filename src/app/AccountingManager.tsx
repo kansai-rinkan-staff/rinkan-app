@@ -68,7 +68,7 @@ export default function AccountingManager({ data, setData, updateData }: Props) 
 
   const handleSave = async () => {
     if (!formAccount || !formCategory || !formTitle || formAmount <= 0) {
-      alert('すべての項目を正しく入力してください');
+      toast.error('すべての項目を正しく入力してください');
       return;
     }
 
@@ -93,10 +93,15 @@ export default function AccountingManager({ data, setData, updateData }: Props) 
     setIsModalOpen(false);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('この明細を削除しますか？')) return;
-    const newTxList = transactions.filter(t => t.id !== id);
-    await updateData({ ...data, transactions: newTxList });
+  const handleDelete = (id: string) => {
+    setGlobalConfirm({ 
+      isOpen: true, 
+      message: 'この明細を削除しますか？', 
+      onConfirm: async () => {
+        const newTxList = transactions.filter(t => t.id !== id);
+        await updateData({ ...data, transactions: newTxList });
+      }
+    });
   };
 
   const handleExport = () => {
@@ -381,6 +386,29 @@ export default function AccountingManager({ data, setData, updateData }: Props) 
           </div>
         )}
       </AnimatePresence>
+
+      {/* Global Confirm Modal */}
+      <AnimatePresence>
+        {globalConfirm.isOpen && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+              <div className="flex items-center gap-3 text-rose-600 mb-4">
+                <AlertCircle size={24} />
+                <h3 className="font-bold text-lg text-slate-800">確認</h3>
+              </div>
+              <p className="text-slate-600 font-medium mb-6 whitespace-pre-wrap">{globalConfirm.message}</p>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}})} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">キャンセル</button>
+                <button onClick={() => {
+                  globalConfirm.onConfirm();
+                  setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}});
+                }} className="px-5 py-2.5 rounded-xl font-bold bg-rose-500 text-white hover:bg-rose-600 shadow-sm transition-colors">実行する</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

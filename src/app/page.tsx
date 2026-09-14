@@ -20,6 +20,8 @@ export default function App() {
   const [data, setData] = useState<AppData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [globalConfirm, setGlobalConfirm] = useState<{isOpen: boolean, message: string, onConfirm: () => void}>({isOpen: false, message: '', onConfirm: () => {}});
+  const [globalPrompt, setGlobalPrompt] = useState<{isOpen: boolean, message: string, value: string}>({isOpen: false, message: '', value: ''});
   const [currentTab, setCurrentTab] = useState<'schedule' | 'tasks' | 'roster' | 'groups' | 'duties' | 'settings' | 'accounting'>('schedule');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
@@ -376,9 +378,9 @@ export default function App() {
                             <div className="flex gap-1 shrink-0 ml-auto">
                               <button onClick={() => setScheduleModal({isOpen: true, schedule: item})} className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100"><Edit2 size={18} /></button>
                               <button onClick={() => {
-                                if(confirm('この行程を完全に削除しますか？')) {
+                                setGlobalConfirm({ isOpen: true, message: 'この行程を完全に削除しますか？', onConfirm: () => {
                                   updateData({...data!, schedule: data!.schedule!.filter((s: ScheduleItem) => s.id !== item.id)} as AppData);
-                                }
+                                } });
                               }} className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-slate-100"><Trash2 size={18} /></button>
                             </div>
                           )}
@@ -399,7 +401,7 @@ export default function App() {
                                   <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-50 hover:opacity-100 transition-opacity">
                                     <button onClick={() => setScheduleModal({isOpen: true, schedule: item, editRoleOnly: note.role})} className="p-1.5 hover:bg-black/5 rounded-lg"><Edit2 size={16} /></button>
                                     <button onClick={() => {
-                                      if(confirm(`${note.role} の指示のみを削除しますか？`)) {
+                                      setGlobalConfirm({ isOpen: true, message: `${note.role} の指示のみを削除しますか？`, onConfirm: () => {
                                         const newSchedule = data!.schedule.map((s: ScheduleItem) => {
                                           if (s.id === item.id) {
                                             return { ...s, roleNotes: s.roleNotes.filter((n: any) => n.role !== note.role) };
@@ -407,7 +409,7 @@ export default function App() {
                                           return s;
                                         });
                                         updateData({...data!, schedule: newSchedule} as AppData);
-                                      }
+                                      } });
                                     }} className="p-1.5 hover:bg-black/5 rounded-lg text-red-600/80"><Trash2 size={16} /></button>
                                   </div>
                                 )}
@@ -441,13 +443,25 @@ export default function App() {
             
             {daysUntil !== null && (
               <div className="sticky top-0 z-20 bg-slate-50/90 backdrop-blur-md pt-4 pb-2 px-4 shadow-sm border-b border-slate-200/50 mb-6 mx-[-1rem]">
-                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center justify-between">
-                  <div className="font-bold text-slate-600 text-sm flex items-center gap-2">
-                    <Calendar size={18} className="text-blue-500" />
-                    林間学校まであと
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div className="font-bold text-slate-600 text-sm flex items-center gap-2">
+                      <Calendar size={18} className="text-blue-500" />
+                      林間学校まであと
+                    </div>
+                    <div className="font-black text-blue-600 text-2xl flex items-baseline gap-1">
+                      {daysUntil} <span className="text-sm font-bold text-slate-500">日</span>
+                    </div>
                   </div>
-                  <div className="font-black text-blue-600 text-2xl flex items-baseline gap-1">
-                    {daysUntil} <span className="text-sm font-bold text-slate-500">日</span>
+                  <div className="w-full h-px bg-slate-100"></div>
+                  <div>
+                    <div className="flex justify-between items-end text-xs font-bold mb-1.5">
+                      <span className="text-slate-500 flex items-center gap-1.5"><CheckSquare size={14} className="text-slate-400"/> タスク完了状況</span>
+                      <span className="text-blue-600 text-sm">{data?.tasks.filter((t: any) => t.completed).length || 0} / {data?.tasks.length || 0} <span className="text-slate-400 text-xs font-medium">件</span> <span className="ml-1 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{data?.tasks.length ? Math.round((data.tasks.filter((t: any) => t.completed).length / data.tasks.length) * 100) : 0}%</span></span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner">
+                      <div className="bg-gradient-to-r from-blue-400 to-blue-600 h-3 rounded-full transition-all duration-700 ease-out" style={{ width: `${data?.tasks.length ? Math.round((data.tasks.filter((t: any) => t.completed).length / data.tasks.length) * 100) : 0}%` }}></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -522,7 +536,7 @@ export default function App() {
                                 <div className="flex flex-col gap-1 shrink-0">
                                   <button onClick={() => setTaskModal({isOpen: true, task})} className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100"><Edit2 size={18} /></button>
                                   <button onClick={() => {
-                                    if(confirm('本当に削除しますか？')) updateData({...data!, tasks: data!.tasks.filter((t: TaskItem) => t.id !== task.id)} as AppData);
+                                    setGlobalConfirm({ isOpen: true, message: '本当に削除しますか？', onConfirm: () => updateData({...data!, tasks: data!.tasks.filter((t: TaskItem) => t.id !== task.id)} as AppData) });
                                   }} className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-slate-100"><Trash2 size={18} /></button>
                                 </div>
                               )}
@@ -682,9 +696,9 @@ export default function App() {
                         <div key={i} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200">
                           <span className="font-bold text-slate-700">{dateStr}</span>
                           <button onClick={() => {
-                            if(confirm('削除しますか？')) {
+                            setGlobalConfirm({ isOpen: true, message: '削除しますか？', onConfirm: () => {
                               updateData({...data!, eventDates: (data?.eventDates || []).filter((_, idx: number) => idx !== i)} as AppData);
-                            }
+                            } });
                           }} className="text-red-500 p-2"><Trash2 size={16} /></button>
                         </div>
                       ))}
@@ -714,9 +728,9 @@ export default function App() {
                     <div key={i} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200">
                       <span className="font-bold text-slate-700">{r}</span>
                       <button onClick={() => {
-                        if(confirm('削除しますか？')) {
+                        setGlobalConfirm({ isOpen: true, message: '削除しますか？', onConfirm: () => {
                           updateData({...data!, roles: rolesList.filter((_, idx: number) => idx !== i)} as AppData);
-                        }
+                        } });
                       }} className="text-red-500 p-2"><Trash2 size={16} /></button>
                     </div>
                   ))}
@@ -744,9 +758,9 @@ export default function App() {
                     <div key={i} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200">
                       <span className="font-bold text-slate-700">{r}</span>
                       <button onClick={() => {
-                        if(confirm('削除しますか？')) {
+                        setGlobalConfirm({ isOpen: true, message: '削除しますか？', onConfirm: () => {
                           updateData({...data!, taskAssignees: taskAssigneesList.filter((_, idx: number) => idx !== i)} as AppData);
-                        }
+                        } });
                       }} className="text-red-500 p-2"><Trash2 size={16} /></button>
                     </div>
                   ))}
@@ -878,7 +892,7 @@ export default function App() {
                         await navigator.clipboard.writeText(text);
                         toast.success('全体管理者用の招待文をコピーしました！LINE等で共有してください');
                       } catch(e) {
-                        prompt('以下のテキストをコピーしてください', text);
+                        setGlobalPrompt({ isOpen: true, message: '以下のテキストをコピーしてください', value: text });
                       }
                     }} className="w-full bg-amber-500 text-white font-bold py-3.5 rounded-xl hover:bg-amber-600 transition-colors shadow-md flex items-center justify-center gap-2">
                       <Shield size={18}/> 管理者として招待
@@ -892,7 +906,7 @@ export default function App() {
                         await navigator.clipboard.writeText(text);
                         toast.success('編集者用の招待文をコピーしました！LINE等で共有してください');
                       } catch(e) {
-                        prompt('以下のテキストをコピーしてください', text);
+                        setGlobalPrompt({ isOpen: true, message: '以下のテキストをコピーしてください', value: text });
                       }
                     }} className="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition-colors shadow-md flex items-center justify-center gap-2">
                       <Edit3 size={18}/> 編集者として招待
@@ -921,11 +935,11 @@ export default function App() {
                           <div className="text-xs text-slate-400 font-medium mt-0.5">ID: {u.username}</div>
                         </div>
                         <button onClick={async () => {
-                          if(confirm(u.username + 'を削除しますか？')) {
+                          setGlobalConfirm({ isOpen: true, message: u.username + 'を削除しますか？', onConfirm: () => {
                             const res = await deleteUser(u.id);
                             if (res.success) getUsers().then(setUsersList);
                             else toast.error(res.error);
-                          }
+                          } });
                         }} className="text-red-500 p-2 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={16} /></button>
                       </div>
                     ))}
@@ -957,7 +971,7 @@ export default function App() {
                         await navigator.clipboard.writeText(text);
                         toast.success('閲覧者用の招待文をコピーしました！LINE等で共有してください');
                       } catch(e) {
-                        prompt('以下のテキストをコピーしてください', text);
+                        setGlobalPrompt({ isOpen: true, message: '以下のテキストをコピーしてください', value: text });
                       }
                     }} className="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-900 transition-colors shadow-md flex items-center justify-center gap-2">
                       <Eye size={18}/> 閲覧者の招待リンクを作成してコピー
@@ -989,6 +1003,63 @@ export default function App() {
         data={data}
         updateData={updateData}
       />
+
+      {/* Global Confirm Modal */}
+      <AnimatePresence>
+        {globalConfirm.isOpen && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+              <div className="flex items-center gap-3 text-rose-600 mb-4">
+                <AlertCircle size={24} />
+                <h3 className="font-bold text-lg text-slate-800">確認</h3>
+              </div>
+              <p className="text-slate-600 font-medium mb-6 whitespace-pre-wrap">{globalConfirm.message}</p>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}})} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">キャンセル</button>
+                <button onClick={() => {
+                  globalConfirm.onConfirm();
+                  setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}});
+                }} className="px-5 py-2.5 rounded-xl font-bold bg-rose-500 text-white hover:bg-rose-600 shadow-sm transition-colors">実行する</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Global Prompt/Copy Modal */}
+      <AnimatePresence>
+        {globalPrompt.isOpen && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl">
+              <div className="flex items-center gap-3 text-blue-600 mb-4">
+                <Copy size={24} />
+                <h3 className="font-bold text-lg text-slate-800">テキストのコピー</h3>
+              </div>
+              <p className="text-slate-600 font-medium mb-4">{globalPrompt.message}</p>
+              <textarea 
+                readOnly 
+                value={globalPrompt.value} 
+                className="w-full h-32 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono text-slate-700 outline-none resize-none mb-6"
+                onClick={(e) => e.target.select()}
+              />
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setGlobalPrompt({isOpen: false, message: '', value: ''})} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">閉じる</button>
+                <button onClick={() => {
+                  navigator.clipboard.writeText(globalPrompt.value).then(() => {
+                    toast.success('コピーしました');
+                    setGlobalPrompt({isOpen: false, message: '', value: ''});
+                  }).catch(() => {
+                    toast.error('コピーに失敗しました。手動でコピーしてください。');
+                  });
+                }} className="px-5 py-2.5 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 shadow-sm transition-colors flex items-center gap-2">
+                  <Copy size={18} /> コピーする
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

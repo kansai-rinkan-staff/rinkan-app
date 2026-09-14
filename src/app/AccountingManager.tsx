@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppData, Transaction, CustomBucket } from './actions';
-import { Plus, Trash2, Edit2, Download, TrendingUp, TrendingDown, DollarSign, Calculator, AlertCircle, X, ChevronDown, CheckSquare, Check } from 'lucide-react';
+import { Plus, Trash2, Edit2, Download, TrendingUp, TrendingDown, DollarSign, Calculator, AlertCircle, X, ChevronDown, CheckSquare, Check , Users } from 'lucide-react';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 function cn(...inputs: (string | undefined | null | false)[]) { return twMerge(clsx(inputs)); }
@@ -19,6 +19,8 @@ export default function AccountingManager({ data, setData, updateData }: Props) 
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [showSimulator, setShowSimulator] = useState(false);
+  const [viewMode, setViewMode] = useState<'ledger' | 'collection'>('ledger');
+  const [collectionTab, setCollectionTab] = useState<'student' | 'youth'>('student');
 
   // Form State
   const [formType, setFormType] = useState<'income' | 'expense'>('expense');
@@ -127,6 +129,10 @@ export default function AccountingManager({ data, setData, updateData }: Props) 
 
   return (
     <div className="max-w-4xl mx-auto pb-20">
+      <div className="flex bg-slate-100 p-1 rounded-xl w-fit mb-6">
+        <button onClick={() => setViewMode('ledger')} className={cn("px-6 py-2 rounded-lg font-bold text-sm transition-all", viewMode === 'ledger' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}>収支明細</button>
+        <button onClick={() => setViewMode('collection')} className={cn("px-6 py-2 rounded-lg font-bold text-sm transition-all", viewMode === 'collection' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700")}>集金状況</button>
+      </div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2">
           <DollarSign className="text-blue-600" size={28}/> 会計・収支管理
@@ -173,6 +179,58 @@ export default function AccountingManager({ data, setData, updateData }: Props) 
         </motion.div>
       )}
 
+      {viewMode === 'collection' && (
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-4 sm:p-6 overflow-hidden">
+          <div className="flex items-center gap-2 mb-6">
+            <Users className="text-blue-600" size={24} />
+            <h3 className="text-xl font-bold text-slate-800">参加費の集金状況</h3>
+          </div>
+          
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-4">
+            <button onClick={() => setCollectionTab('student')} className={cn("px-5 py-2.5 rounded-xl font-bold whitespace-nowrap transition-all", collectionTab === 'student' ? "bg-emerald-50 text-emerald-700 shadow-sm" : "bg-white text-slate-500 hover:bg-slate-50")}>
+              学生部
+            </button>
+            <button onClick={() => setCollectionTab('youth')} className={cn("px-5 py-2.5 rounded-xl font-bold whitespace-nowrap transition-all", collectionTab === 'youth' ? "bg-amber-50 text-amber-700 shadow-sm" : "bg-white text-slate-500 hover:bg-slate-50")}>
+              青年部・一般
+            </button>
+          </div>
+
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <table className="w-full text-left min-w-[400px]">
+              <thead>
+                <tr className="bg-slate-50 text-slate-500 text-sm">
+                  <th className="p-4 font-bold border-b border-slate-200">氏名</th>
+                  <th className="p-4 font-bold border-b border-slate-200">所属</th>
+                  <th className="p-4 font-bold border-b border-slate-200 text-center">集金</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(data.participants || []).filter(p => p.type === collectionTab).map((p) => (
+                  <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50/50">
+                    <td className="p-4 font-bold text-slate-800">{p.name}</td>
+                    <td className="p-4">
+                      <span className={cn("px-2 py-1 rounded-md text-xs font-bold", p.type === 'student' ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700")}>
+                        {p.type === 'student' ? '学生部' : '青年部・一般'}
+                      </span>
+                    </td>
+                    <td className="p-4 text-center">
+                      <button onClick={() => {
+                        const newFeePaid = !p.feePaid;
+                        updateData({...data, participants: (data.participants || []).map(x => x.id === p.id ? {...x, feePaid: newFeePaid} : x)});
+                      }} className={cn("w-6 h-6 rounded-md flex items-center justify-center transition-colors mx-auto border-2", p.feePaid ? "bg-emerald-500 border-emerald-500 text-white shadow-sm" : "bg-white border-slate-300 text-transparent hover:border-emerald-400")}>
+                        <Check size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {viewMode === 'ledger' && (
+        <>
       {/* Account Tabs */}
       <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-6 pb-2">
         <button onClick={() => setActiveAccount('all')} className={cn("px-5 py-2.5 rounded-xl font-bold whitespace-nowrap transition-all", activeAccount === 'all' ? "bg-slate-800 text-white shadow-md" : "bg-white text-slate-500 hover:bg-slate-50")}>
@@ -259,6 +317,9 @@ export default function AccountingManager({ data, setData, updateData }: Props) 
           </table>
         </div>
       </div>
+
+      </>
+      )}
 
       {/* Transaction Modal */}
       <AnimatePresence>

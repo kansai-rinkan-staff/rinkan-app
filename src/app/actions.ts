@@ -15,6 +15,16 @@ export type ScheduleItem = { id: string; time: string; activity: string; roleNot
 export type TaskItem = { id: string; name: string; deadline: string; assignee: string; memo: string; fileUrl?: string; fileUrls?: string[]; completed: boolean; };
 
 
+export type Transaction = {
+  id: string;
+  date: string;
+  type: 'income' | 'expense';
+  accountId: string;
+  categoryId: string;
+  title: string;
+  amount: number;
+};
+
 export type Participant = {
   id: string;          
   type: 'student' | 'youth'; 
@@ -22,6 +32,7 @@ export type Participant = {
   gender: string;      
   grade: string;       
   raw: any; 
+  feePaid?: boolean;
   
   allocations: {
     group?: string;
@@ -59,6 +70,12 @@ export type AppData = {
   timestamps?: Record<string, string>;
   cars?: CustomBucket[];
   studentRoles?: CustomBucket[];
+  
+  // Accounting
+  transactions?: Transaction[];
+  accounts?: CustomBucket[];
+  transactionCategories?: CustomBucket[];
+  budgetSettings?: Record<string, number>;
 };
 
 
@@ -72,6 +89,30 @@ const DEFAULT_DATA: AppData = {
     "お茶",
     "飯・キャ"
   ],
+  "accounts": [
+    { id: 'acc_student', name: '学生部' },
+    { id: 'acc_youth', name: '青年部・一般' },
+    { id: 'acc_reserve', name: '予備' }
+  ],
+  "transactionCategories": [
+    { id: 'cat_fee', name: '参加費' },
+    { id: 'cat_transport', name: '交通費' },
+    { id: 'cat_lodging', name: '宿泊費' },
+    { id: 'cat_food', name: '食費' },
+    { id: 'cat_supply', name: '備品代' },
+    { id: 'cat_misc', name: '雑費' }
+  ],
+  "budgetSettings": {
+    "studentFee": 0,
+    "youthFee": 0,
+    "sheetFee": 300,
+    "breakfastFee": 500,
+    "lunchFee": 600,
+    "dinnerFee": 800,
+    "busFee": 200000,
+    "miscFee": 50000
+  },
+  "transactions": [],
   "schedule": [
     {
       "id": "s1",

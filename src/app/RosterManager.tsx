@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, Upload, Users, Plus, Trash2, Edit2, X, AlertCircle, Save } from 'lucide-react';
+import { Download, Upload, Users, Plus, Trash2, Edit2, X, AlertCircle, Save, Check } from 'lucide-react';
 import { AppData, Participant, CustomBucket } from './actions';
 import * as XLSX from 'xlsx';
 import { toast } from 'sonner';
@@ -806,6 +806,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                           <th className="p-4 font-bold border-b border-slate-200">氏名</th>
                           <th className="p-4 font-bold border-b border-slate-200">所属</th>
                           <th className="p-4 font-bold border-b border-slate-200">学年/性別</th>
+                          <th className="p-4 font-bold border-b border-slate-200 text-center">集金</th>
                           {role !== 'viewer' && <th className="p-4 font-bold border-b border-slate-200 text-right">操作</th>}
                         </tr>
                       </thead>
@@ -819,6 +820,15 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                               </span>
                             </td>
                             <td className="p-4 text-sm text-slate-600 font-medium">{p.grade} / {p.gender}</td>
+                            <td className="p-4 text-center">
+                              <button onClick={() => {
+                                if (role === 'viewer') return;
+                                const newFeePaid = !p.feePaid;
+                                updateParticipants(participants.map(x => x.id === p.id ? {...x, feePaid: newFeePaid} : x));
+                              }} className={cn("w-6 h-6 rounded-md flex items-center justify-center transition-colors mx-auto border-2", p.feePaid ? "bg-emerald-500 border-emerald-500 text-white shadow-sm" : "bg-white border-slate-300 text-transparent hover:border-emerald-400")}>
+                                <Check size={16} />
+                              </button>
+                            </td>
                             {role !== 'viewer' && (
                             <td className="p-4">
                               <div className="flex gap-2">

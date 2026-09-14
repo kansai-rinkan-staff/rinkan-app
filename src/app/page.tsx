@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import RosterManager from './RosterManager';
+import AccountingManager from './AccountingManager';
 
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
@@ -19,7 +20,7 @@ export default function App() {
   const [data, setData] = useState<AppData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [currentTab, setCurrentTab] = useState<'schedule' | 'tasks' | 'roster' | 'groups' | 'duties' | 'settings'>('schedule');
+  const [currentTab, setCurrentTab] = useState<'schedule' | 'tasks' | 'roster' | 'groups' | 'duties' | 'settings' | 'accounting'>('schedule');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   const [role, setRole] = useState<'admin' | 'editor' | 'viewer' | 'none'>('none');
@@ -37,7 +38,7 @@ export default function App() {
   const [taskView, setTaskView] = useState<'list'|'calendar'>('list');
   const [calendarMonth, setCalendarMonth] = useState(new Date());
 
-  const [activeSetting, setActiveSetting] = useState<'menu'|'font'|'schedule'|'roles'|'tasks'|'accounts'>('menu');
+  const [activeSetting, setActiveSetting] = useState<'menu'|'font'|'schedule'|'roles'|'tasks'|'accounts'|'accountingSettings'>('menu');
 
   const [taskModal, setTaskModal] = useState<{isOpen: boolean, task: TaskItem | null}>({isOpen: false, task: null});
   const [userModal, setUserModal] = useState<{isOpen: boolean, user: User | null}>({isOpen: false, user: null});
@@ -60,6 +61,7 @@ export default function App() {
       getUsers().then(setUsersList).catch(console.error);
     }
     if ((roleValue === 'viewer' || roleValue === 'none') && currentTab === 'tasks') setCurrentTab('schedule');
+    if (roleValue !== 'admin' && currentTab === 'accounting') setCurrentTab('schedule');
     if (roleValue !== 'admin' && currentTab === 'settings' && activeSetting !== 'menu' && activeSetting !== 'font') { setActiveSetting('menu'); }
   };
 
@@ -214,6 +216,11 @@ export default function App() {
                   <button onClick={() => {setCurrentTab('duties'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'duties' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
                     <Car size={24} /> 配車・役割分担
                   </button>
+                  {role === 'admin' && (
+                    <button onClick={() => {setCurrentTab('accounting'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'accounting' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dollar-sign"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> 会計
+                    </button>
+                  )}
                   <button onClick={() => {setCurrentTab('settings'); setActiveSetting('menu'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'settings' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
                     <Settings size={24} /> 設定
                   </button>
@@ -256,7 +263,7 @@ export default function App() {
           <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-white hover:bg-white/20 rounded-xl transition-colors">
             <Menu size={24} />
           </button>
-          <h1 className="text-xl font-bold tracking-wider">{currentTab === 'schedule' ? '行程表' : currentTab === 'tasks' ? 'タスク' : currentTab === 'roster' ? '参加者名簿' : currentTab === 'groups' ? '班・部屋割' : currentTab === 'duties' ? '配車・役割分担' : '設定'}</h1>
+          <h1 className="text-xl font-bold tracking-wider">{currentTab === 'schedule' ? '行程表' : currentTab === 'tasks' ? 'タスク' : currentTab === 'roster' ? '参加者名簿' : currentTab === 'groups' ? '班・部屋割' : currentTab === 'duties' ? '配車・役割分担' : currentTab === 'accounting' ? '会計' : '設定'}</h1>
         </div>
                 <div className="flex items-center gap-3">
           {saving ? (
@@ -577,6 +584,12 @@ export default function App() {
           </motion.div>
         )}
 
+        {currentTab === 'accounting' && role === 'admin' && data && (
+          <motion.div initial={{opacity:0, y:10}} animate={{opacity:1, y:0}}>
+            <AccountingManager data={data} setData={setData} updateData={updateData} />
+          </motion.div>
+        )}
+        
         {currentTab === 'settings' && (
           <motion.div initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} className="pb-12 max-w-lg mx-auto">
             <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2 px-2">
@@ -748,6 +761,100 @@ export default function App() {
               </div>
             )}
 
+            {activeSetting === 'accountingSettings' && role === 'admin' && (
+              <div className="space-y-6">
+                
+                {/* Budget Settings */}
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                  <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><CheckSquare size={18} className="text-blue-500"/> 参加費計算の基本単価設定</h3>
+                  <div className="space-y-4">
+                    {['sheetFee', 'breakfastFee', 'lunchFee', 'dinnerFee', 'busFee', 'miscFee'].map(key => (
+                      <div key={key} className="flex flex-col gap-1">
+                        <label className="text-xs font-bold text-slate-500">
+                          {key === 'sheetFee' ? 'シーツ代 (1人あたり)' : 
+                           key === 'breakfastFee' ? '朝食代 (1食あたり)' : 
+                           key === 'lunchFee' ? '昼食代 (1食あたり)' : 
+                           key === 'dinnerFee' ? '夕食代 (1食あたり)' : 
+                           key === 'busFee' ? 'バス代 (総額見込み)' : '予備・雑費 (総額見込み)'}
+                        </label>
+                        <input 
+                          type="number" 
+                          value={(data?.budgetSettings || {})[key] || 0}
+                          onChange={(e) => {
+                            const newBudget = { ...(data?.budgetSettings || {}), [key]: parseInt(e.target.value) || 0 };
+                            updateData({...data!, budgetSettings: newBudget} as AppData);
+                          }}
+                          className="p-3 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Accounts */}
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                  <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><Users size={18} className="text-blue-500"/> 口座（財布）の管理</h3>
+                  <div className="space-y-2 mb-4">
+                    {(data?.accounts || []).map((acc: any, i: number) => (
+                      <div key={acc.id} className="flex items-center gap-2">
+                        <input 
+                          type="text" 
+                          value={acc.name}
+                          onChange={(e) => {
+                            const newAccs = [...data!.accounts!];
+                            newAccs[i].name = e.target.value;
+                            updateData({...data!, accounts: newAccs} as AppData);
+                          }}
+                          className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold"
+                        />
+                        <button onClick={() => {
+                          const newAccs = data!.accounts!.filter((_, idx) => idx !== i);
+                          updateData({...data!, accounts: newAccs} as AppData);
+                        }} className="p-3 text-red-500 hover:bg-red-50 rounded-xl"><Trash2 size={18}/></button>
+                      </div>
+                    ))}
+                  </div>
+                  <button onClick={() => {
+                    const newAcc = { id: 'acc_' + Date.now(), name: '新規口座' };
+                    updateData({...data!, accounts: [...(data?.accounts || []), newAcc]} as AppData);
+                  }} className="w-full py-3 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 font-bold hover:bg-slate-50 hover:border-slate-400 transition-colors flex items-center justify-center gap-2">
+                    <Plus size={18} /> 口座を追加
+                  </button>
+                </div>
+
+                {/* Categories */}
+                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                  <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><CheckSquare size={18} className="text-blue-500"/> 勘定カテゴリの管理</h3>
+                  <div className="space-y-2 mb-4">
+                    {(data?.transactionCategories || []).map((cat: any, i: number) => (
+                      <div key={cat.id} className="flex items-center gap-2">
+                        <input 
+                          type="text" 
+                          value={cat.name}
+                          onChange={(e) => {
+                            const newCats = [...data!.transactionCategories!];
+                            newCats[i].name = e.target.value;
+                            updateData({...data!, transactionCategories: newCats} as AppData);
+                          }}
+                          className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold"
+                        />
+                        <button onClick={() => {
+                          const newCats = data!.transactionCategories!.filter((_, idx) => idx !== i);
+                          updateData({...data!, transactionCategories: newCats} as AppData);
+                        }} className="p-3 text-red-500 hover:bg-red-50 rounded-xl"><Trash2 size={18}/></button>
+                      </div>
+                    ))}
+                  </div>
+                  <button onClick={() => {
+                    const newCat = { id: 'cat_' + Date.now(), name: '新規カテゴリ' };
+                    updateData({...data!, transactionCategories: [...(data?.transactionCategories || []), newCat]} as AppData);
+                  }} className="w-full py-3 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 font-bold hover:bg-slate-50 hover:border-slate-400 transition-colors flex items-center justify-center gap-2">
+                    <Plus size={18} /> カテゴリを追加
+                  </button>
+                </div>
+              </div>
+            )}
+            
             {activeSetting === 'accounts' && role === 'admin' && (
               <div className="space-y-6">
                 

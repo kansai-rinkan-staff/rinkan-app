@@ -383,8 +383,9 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
     return (
       <div className="flex flex-col lg:flex-row gap-6 min-h-[60vh] w-full items-start">
         {/* Unassigned List */}
+        {role !== 'viewer' && (
         <div 
-          className="w-full lg:w-72 shrink-0 bg-slate-100/80 rounded-2xl p-4 flex flex-col max-h-[80vh] border border-slate-200 shadow-inner sticky top-[140px]"
+          className="w-full lg:w-72 shrink-0 bg-slate-100/80 rounded-2xl p-3 flex flex-col max-h-[80vh] border border-slate-200 shadow-inner sticky top-[140px]"
           onDragOver={handleDragOver}
           onDrop={(e) => handleDrop(e, 'unassigned', allocationKey)}
         >
@@ -396,19 +397,20 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
             {unassigned.map(p => (
               <div 
                 key={p.id} 
-                draggable={role !== 'viewer' && isEditing}
+                draggable={isEditing}
                 onDragStart={(e) => handleDragStart(e, p.id)}
-                className={cn("bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center", isEditing ? "cursor-grab active:cursor-grabbing hover:border-blue-300 hover:shadow-md transition-all" : "")}
+                className={cn("bg-white p-1.5 px-2 rounded-lg shadow-sm border border-slate-100 flex justify-between items-center", isEditing ? "cursor-grab active:cursor-grabbing hover:border-blue-300 hover:shadow-md transition-all" : "")}
               >
                 <div>
-                  <div className="font-bold text-slate-800 text-sm">{p.name}</div>
-                  <div className="text-[10px] text-slate-400 font-medium">{p.gender} / {p.grade} / {p.type === 'student' ? '学生' : '青年'}</div>
+                  <div className="font-bold text-slate-800 text-xs">{p.name}</div>
+                  <div className="text-[9px] text-slate-400 font-medium">{p.gender} / {p.grade} / {p.type === 'student' ? '学生' : '青年'}</div>
                 </div>
               </div>
             ))}
             {unassigned.length === 0 && <div className="text-slate-400 text-xs text-center pt-8">全員配属済みです</div>}
           </div>
         </div>
+        )}
 
         {/* Buckets List (Kanban Flex Wrap) */}
         <div className="flex-1 flex flex-wrap gap-4 w-full">
@@ -424,16 +426,16 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                 draggable={role === 'admin' && isEditing && allocationKey !== 'room'}
                 onDragStart={(e) => handleDragStart(e, bucket.id, 'bucket')}
                 className={cn(
-                  "w-full sm:w-[calc(50%-8px)] md:w-[calc(33.333%-11px)] xl:w-64 rounded-2xl p-4 flex flex-col border transition-all shadow-sm",
+                  "w-full sm:w-[calc(50%-8px)] md:w-[calc(33.333%-11px)] xl:w-64 rounded-xl p-2 flex flex-col border transition-all shadow-sm",
                   isOverCapacity ? "bg-red-50/80 border-red-200" : "bg-white border-slate-200",
                   (role === 'admin' && isEditing && allocationKey !== 'room') ? "cursor-grab active:cursor-grabbing hover:border-blue-300 hover:shadow-md" : ""
                 )}
                 style={{ minHeight: '300px' }}
               >
-                <div className="font-bold text-slate-800 mb-1 flex justify-between items-center text-lg">
+                <div className="font-bold text-slate-800 mb-0.5 flex justify-between items-center text-sm">
                   {bucket.name}
                 </div>
-                <div className="text-xs text-slate-500 mb-4 flex justify-between items-center border-b border-slate-100 pb-2 font-medium">
+                <div className="text-[10px] text-slate-500 mb-2 flex justify-between items-center border-b border-slate-100 pb-1 font-medium">
                   <span>{assigned.length}名</span>
                   {bucket.capacity && (
                     <span className={cn(isOverCapacity ? "text-red-600 font-bold bg-red-100 px-2 py-0.5 rounded" : "")}>定員: {bucket.capacity}名</span>
@@ -444,11 +446,11 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                   {assigned.map(p => (
                     <div 
                       key={p.id}
-                      draggable={role !== 'viewer' && isEditing}
+                      draggable={isEditing}
                       onDragStart={(e) => handleDragStart(e, p.id)}
-                      className={cn("bg-slate-50 p-3 rounded-xl border border-slate-200 group relative", isEditing ? "cursor-grab active:cursor-grabbing hover:border-blue-300 hover:shadow-md transition-all" : "")}
+                      className={cn("bg-slate-50 p-1.5 px-2 rounded-lg border border-slate-200 group relative", isEditing ? "cursor-grab active:cursor-grabbing hover:border-blue-300 hover:shadow-md transition-all" : "")}
                     >
-                      <div className="font-bold text-slate-700 text-sm flex justify-between">
+                      <div className="font-bold text-slate-700 text-xs flex justify-between">
                         {p.name}
                         <span className="text-[9px] text-slate-400 font-normal">{p.grade}</span>
                       </div>
@@ -575,7 +577,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
             )}
             
             {role !== 'viewer' && (
-              <>
+              <div className="hidden md:flex items-center gap-2">
                 {!isEditing ? (
                   <button onClick={() => setIsEditing(true)} className="bg-white border-2 border-blue-600 text-blue-600 px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-blue-50 transition-colors shadow-sm">
                     <Edit2 size={16}/> 編集
@@ -590,7 +592,7 @@ export default function RosterManager({ category, data, setData, saveAppData, ro
                     </button>
                   </>
                 )}
-              </>
+              </div>
             )}
           </div>
         )}

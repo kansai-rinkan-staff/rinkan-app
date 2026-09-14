@@ -22,7 +22,7 @@ export default function App() {
   const [saving, setSaving] = useState(false);
   const [globalConfirm, setGlobalConfirm] = useState<{isOpen: boolean, message: string, onConfirm: () => void}>({isOpen: false, message: '', onConfirm: () => {}});
   const [globalPrompt, setGlobalPrompt] = useState<{isOpen: boolean, message: string, value: string}>({isOpen: false, message: '', value: ''});
-  const [currentTab, setCurrentTab] = useState<'schedule' | 'tasks' | 'roster' | 'groups' | 'duties' | 'settings' | 'accounting'>('schedule');
+  const [currentTab, setCurrentTab] = useState<'home' | 'schedule' | 'tasks' | 'roster' | 'groups' | 'duties' | 'settings' | 'accounting'>('home');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   const [role, setRole] = useState<'admin' | 'editor' | 'viewer' | 'none'>('none');
@@ -201,17 +201,20 @@ export default function App() {
               </div>
                             <div className="flex-1 p-4 overflow-y-auto">
                 <div className="space-y-2 mb-6">
+                  <button onClick={() => {setCurrentTab('home'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'home' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
+                    <Home size={24} /> ホーム
+                  </button>
                   <button onClick={() => {setCurrentTab('schedule'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'schedule' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
                     <CalendarDays size={24} /> 行程表
                   </button>
-                  {role !== 'viewer'  && (
-                    <button onClick={() => {setCurrentTab('tasks'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'tasks' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
+                  <button onClick={() => {setCurrentTab('tasks'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'tasks' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
                       <CheckSquare size={24} /> タスク
                     </button>
-                  )}
+                  {role !== 'viewer' && (
                   <button onClick={() => {setCurrentTab('roster'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'roster' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
                     <Users size={24} /> 参加者名簿
                   </button>
+                  )}
                   <button onClick={() => {setCurrentTab('groups'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'groups' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
                     <Component size={24} /> 班・部屋割
                   </button>
@@ -265,7 +268,7 @@ export default function App() {
           <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-white hover:bg-white/20 rounded-xl transition-colors">
             <Menu size={24} />
           </button>
-          <h1 className="text-xl font-bold tracking-wider">{currentTab === 'schedule' ? '行程表' : currentTab === 'tasks' ? 'タスク' : currentTab === 'roster' ? '参加者名簿' : currentTab === 'groups' ? '班・部屋割' : currentTab === 'duties' ? '配車・役割分担' : currentTab === 'accounting' ? '会計' : '設定'}</h1>
+          <h1 className="text-xl font-bold tracking-wider">{currentTab === 'home' ? 'ホーム' : currentTab === 'schedule' ? '行程表' : currentTab === 'tasks' ? 'タスク' : currentTab === 'roster' ? '参加者名簿' : currentTab === 'groups' ? '班・部屋割' : currentTab === 'duties' ? '配車・役割分担' : currentTab === 'accounting' ? '会計' : '設定'}</h1>
         </div>
                 <div className="flex items-center gap-3">
           {saving ? (
@@ -279,6 +282,87 @@ export default function App() {
       </div>
 
       <div className="w-full max-w-7xl mx-auto p-4 md:p-6 relative z-0 -mt-2">
+        
+        {currentTab === 'home' && (
+          <motion.div initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} className="pb-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2">
+              <button onClick={() => setCurrentTab('schedule')} className="flex flex-col items-center justify-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 hover:-translate-y-1 transition-all group">
+                <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <CalendarDays size={32} />
+                </div>
+                <div className="text-center">
+                  <div className="font-bold text-slate-800 text-lg">行程表</div>
+                  <div className="text-xs text-slate-500 font-medium mt-1">スケジュールの確認</div>
+                </div>
+              </button>
+
+              <button onClick={() => setCurrentTab('tasks')} className="flex flex-col items-center justify-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 hover:-translate-y-1 transition-all group">
+                <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <CheckSquare size={32} />
+                </div>
+                <div className="text-center">
+                  <div className="font-bold text-slate-800 text-lg">タスク</div>
+                  <div className="text-xs text-slate-500 font-medium mt-1">タスクの確認・管理</div>
+                </div>
+              </button>
+
+              {role !== 'viewer' && (
+                <button onClick={() => setCurrentTab('roster')} className="flex flex-col items-center justify-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 hover:-translate-y-1 transition-all group">
+                  <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Users size={32} />
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold text-slate-800 text-lg">参加者名簿</div>
+                    <div className="text-xs text-slate-500 font-medium mt-1">メンバーの管理</div>
+                  </div>
+                </button>
+              )}
+
+              <button onClick={() => setCurrentTab('groups')} className="flex flex-col items-center justify-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 hover:-translate-y-1 transition-all group">
+                <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Component size={32} />
+                </div>
+                <div className="text-center">
+                  <div className="font-bold text-slate-800 text-lg">班・部屋割</div>
+                  <div className="text-xs text-slate-500 font-medium mt-1">班編成の確認・編集</div>
+                </div>
+              </button>
+
+              <button onClick={() => setCurrentTab('duties')} className="flex flex-col items-center justify-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 hover:-translate-y-1 transition-all group">
+                <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Car size={32} />
+                </div>
+                <div className="text-center">
+                  <div className="font-bold text-slate-800 text-lg">配車・役割</div>
+                  <div className="text-xs text-slate-500 font-medium mt-1">車両や役割の割当</div>
+                </div>
+              </button>
+
+              {role === 'admin' && (
+                <button onClick={() => setCurrentTab('accounting')} className="flex flex-col items-center justify-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 hover:-translate-y-1 transition-all group">
+                  <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dollar-sign"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold text-slate-800 text-lg">会計</div>
+                    <div className="text-xs text-slate-500 font-medium mt-1">集金と収支管理</div>
+                  </div>
+                </button>
+              )}
+
+              <button onClick={() => setCurrentTab('settings')} className="flex flex-col items-center justify-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 hover:-translate-y-1 transition-all group">
+                <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Settings size={32} />
+                </div>
+                <div className="text-center">
+                  <div className="font-bold text-slate-800 text-lg">設定</div>
+                  <div className="text-xs text-slate-500 font-medium mt-1">アカウント・基本設定</div>
+                </div>
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         {currentTab === 'roster' && data && <RosterManager category="roster" data={data} setData={setData} saveAppData={saveAppData} role={role} />}
         {currentTab === 'groups' && data && <RosterManager category="groups" data={data} setData={setData} saveAppData={saveAppData} role={role} />}
         {currentTab === 'duties' && data && <RosterManager category="duties" data={data} setData={setData} saveAppData={saveAppData} role={role} />}

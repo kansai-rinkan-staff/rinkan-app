@@ -625,6 +625,11 @@ export default function App() {
                         <div className="flex items-center gap-3 font-bold text-slate-700"><UserPlus className="text-blue-500" /> アカウント管理</div>
                         <ChevronRight className="text-slate-400" />
                       </button>
+                      <div className="h-px bg-slate-100 mx-4"></div>
+                      <button onClick={() => setActiveSetting('accountingSettings')} className="w-full flex items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition-colors">
+                        <div className="flex items-center gap-3 font-bold text-slate-700"><CheckSquare className="text-blue-500" /> 会計設定 (単価・口座・カテゴリ)</div>
+                        <ChevronRight className="text-slate-400" />
+                      </button>
                     </>
                   )}
                 </div>

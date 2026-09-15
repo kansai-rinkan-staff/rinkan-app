@@ -70,7 +70,7 @@ export default function LoginPage() {
 
               <div className="mt-8 pt-6 border-t border-slate-100 text-center">
                 <button type="button" onClick={() => setLoginMode('admin')} className="text-sm text-slate-400 hover:text-slate-600 transition-colors font-medium">
-                  編集者・管理者の方はこちら
+                  役員の方はこちら
                 </button>
               </div>
             </motion.div>
@@ -85,12 +85,12 @@ export default function LoginPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">管理者ログイン</h2>
+              <h2 className="text-2xl font-bold text-slate-800 mb-2">役員ログイン</h2>
               <p className="text-slate-500 mb-8">予定の編集やタスクの完了操作を行う方はこちら</p>
               
               <form onSubmit={handleAdminLogin} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">管理者ID</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">役員ID</label>
                   <input 
                     type="text" required value={adminId} onChange={e => setAdminId(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none"

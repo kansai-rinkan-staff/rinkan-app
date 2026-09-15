@@ -112,7 +112,7 @@ export default function LoginPage() {
 
               <div className="mt-8 pt-6 border-t border-slate-100 text-center">
                 <button type="button" onClick={() => setLoginMode('viewer')} className="text-sm text-slate-400 hover:text-slate-600 transition-colors font-medium">
-                  閲覧モードに戻る
+                  戻る
                 </button>
               </div>
             </motion.div>

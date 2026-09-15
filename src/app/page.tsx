@@ -285,6 +285,32 @@ export default function App() {
         
         {currentTab === 'home' && (
           <motion.div initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} className="pb-6">
+            {daysUntil !== null && (
+              <div className="px-2 mb-6 mt-2">
+                <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <div className="font-bold text-slate-600 text-sm flex items-center gap-2">
+                      <Calendar size={20} className="text-blue-500" />
+                      林間学校まであと
+                    </div>
+                    <div className="font-black text-blue-600 text-3xl flex items-baseline gap-1">
+                      {daysUntil} <span className="text-base font-bold text-slate-500">日</span>
+                    </div>
+                  </div>
+                  <div className="w-full h-px bg-slate-100"></div>
+                  <div>
+                    <div className="flex justify-between items-end text-sm font-bold mb-2">
+                      <span className="text-slate-500 flex items-center gap-1.5"><CheckSquare size={16} className="text-slate-400"/> タスク完了状況</span>
+                      <span className="text-blue-600 font-bold">{data?.tasks.filter((t: any) => t.completed).length || 0} / {data?.tasks.length || 0} <span className="text-slate-400 text-xs font-medium">件</span> <span className="ml-1 text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full text-xs">{data?.tasks.length ? Math.round((data.tasks.filter((t: any) => t.completed).length / data.tasks.length) * 100) : 0}%</span></span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner">
+                      <div className="bg-gradient-to-r from-blue-400 to-blue-600 h-4 rounded-full transition-all duration-700 ease-out" style={{ width: `${data?.tasks.length ? Math.round((data.tasks.filter((t: any) => t.completed).length / data.tasks.length) * 100) : 0}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+  
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2">
               <button onClick={() => setCurrentTab('schedule')} className="flex flex-col items-center justify-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 hover:-translate-y-1 transition-all group">
                 <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -525,31 +551,7 @@ export default function App() {
         {currentTab === 'tasks' && (
           <motion.div initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} className="pb-6">
             
-            {daysUntil !== null && (
-              <div className="sticky top-0 z-20 bg-slate-50/90 backdrop-blur-md pt-4 pb-2 px-4 shadow-sm border-b border-slate-200/50 mb-6 mx-[-1rem]">
-                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <div className="font-bold text-slate-600 text-sm flex items-center gap-2">
-                      <Calendar size={18} className="text-blue-500" />
-                      林間学校まであと
-                    </div>
-                    <div className="font-black text-blue-600 text-2xl flex items-baseline gap-1">
-                      {daysUntil} <span className="text-sm font-bold text-slate-500">日</span>
-                    </div>
-                  </div>
-                  <div className="w-full h-px bg-slate-100"></div>
-                  <div>
-                    <div className="flex justify-between items-end text-xs font-bold mb-1.5">
-                      <span className="text-slate-500 flex items-center gap-1.5"><CheckSquare size={14} className="text-slate-400"/> タスク完了状況</span>
-                      <span className="text-blue-600 text-sm">{data?.tasks.filter((t: any) => t.completed).length || 0} / {data?.tasks.length || 0} <span className="text-slate-400 text-xs font-medium">件</span> <span className="ml-1 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{data?.tasks.length ? Math.round((data.tasks.filter((t: any) => t.completed).length / data.tasks.length) * 100) : 0}%</span></span>
-                    </div>
-                    <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner">
-                      <div className="bg-gradient-to-r from-blue-400 to-blue-600 h-3 rounded-full transition-all duration-700 ease-out" style={{ width: `${data?.tasks.length ? Math.round((data.tasks.filter((t: any) => t.completed).length / data.tasks.length) * 100) : 0}%` }}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+
 
             <div className="flex justify-between items-center mb-6 px-2">
               <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">

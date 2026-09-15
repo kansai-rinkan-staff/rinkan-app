@@ -1,8 +1,9 @@
-﻿"use client";
+"use client";
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { loginAsViewer, loginAsAdmin } from '../actions';
 import { toast } from 'sonner';
+import { TreePine } from 'lucide-react';
 
 export default function LoginPage() {
   const [viewerPwd, setViewerPwd] = useState('');
@@ -38,6 +39,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md mx-auto">
+                <div className="text-center mb-8">
+          <h1 className="text-3xl font-black text-slate-800 tracking-wider">関西林間アプリ</h1>
+        </div>
         <AnimatePresence mode="wait">
           {loginMode === 'viewer' ? (
             <motion.div 
@@ -46,10 +50,7 @@ export default function LoginPage() {
               className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100"
             >
               <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
+                <TreePine size={32} />
               </div>
               <h2 className="text-2xl font-bold text-slate-800 mb-2">ログイン</h2>
               <p className="text-slate-500 mb-8">パスワードを入力してスケジュール等を確認できます</p>

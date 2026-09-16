@@ -304,6 +304,11 @@ export default function App() {
           <h1 className="text-xl font-bold tracking-wider">{currentTab === 'home' ? 'ホーム' : currentTab === 'schedule' ? '行程表' : currentTab === 'tasks' ? 'タスク' : currentTab === 'roster' ? '参加者名簿' : currentTab === 'groups' ? '班・部屋割' : currentTab === 'duties' ? '配車・役割分担' : currentTab === 'accounting' ? '会計' : '設定'}</h1>
         </div>
                 <div className="flex items-center gap-3">
+          {currentTab === 'schedule' && role !== 'viewer' && (
+            <button onClick={exportToExcel} className="p-2 text-white hover:bg-white/20 rounded-xl transition-colors" title="Excel出力">
+              <Download size={20} />
+            </button>
+          )}
           {saving ? (
             <div className="animate-spin text-white/80"><RotateCw size={20} /></div>
           ) : (
@@ -460,11 +465,6 @@ export default function App() {
                 <button onClick={() => setShowRoleFilter(!showRoleFilter)} className={cn("p-2.5 rounded-full border transition-all shrink-0 shadow-sm", showRoleFilter ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50")}>
                   <Users size={18} />
                 </button>
-                {role !== 'viewer' && (
-                <button onClick={exportToExcel} className="p-2.5 rounded-full border transition-all shrink-0 shadow-sm bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100" title="Excel出力">
-                  <Download size={18} />
-                </button>
-                )}
               </div>
 
               <AnimatePresence>
@@ -524,12 +524,13 @@ export default function App() {
                           
                           {role === 'admin' && (
                             <div className="flex gap-1 shrink-0 ml-auto">
-                              <button onClick={() => setScheduleModal({isOpen: true, schedule: item})} className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100"><Edit2 size={18} /></button>
                               <button onClick={() => {
                                 setGlobalConfirm({ isOpen: true, message: 'この行程を完全に削除しますか？', onConfirm: () => {
                                   updateData({...data!, schedule: data!.schedule!.filter((s: ScheduleItem) => s.id !== item.id)} as AppData);
                                 } });
-                              }} className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-slate-100"><Trash2 size={18} /></button>
+                              }} className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-slate-100" title="削除"><Trash2 size={18} /></button>
+                              <button onClick={() => setScheduleModal({isOpen: true, schedule: item, mode: 'activity'})} className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100" title="活動内容を編集"><Edit2 size={18} /></button>
+                              <button onClick={() => setScheduleModal({isOpen: true, schedule: item, mode: 'role'})} className="p-2 text-slate-400 hover:text-emerald-600 rounded-lg hover:bg-slate-100" title="役割の指示を追加"><Plus size={18} /></button>
                             </div>
                           )}
                         </div>

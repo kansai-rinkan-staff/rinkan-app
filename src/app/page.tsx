@@ -62,7 +62,7 @@ export default function App() {
     if (roleValue === 'admin') {
       getUsers().then(setUsersList).catch(console.error);
     }
-    if ((roleValue === 'viewer' || roleValue === 'none') && currentTab === 'tasks') setCurrentTab('schedule');
+    if ((roleValue === 'viewer' || roleValue === 'none') && (currentTab === 'tasks' || currentTab === 'home')) setCurrentTab('schedule');
     if (roleValue !== 'admin' && currentTab === 'accounting') setCurrentTab('schedule');
     if (roleValue !== 'admin' && currentTab === 'settings' && activeSetting !== 'menu' && activeSetting !== 'font') { setActiveSetting('menu'); }
   };
@@ -201,15 +201,19 @@ export default function App() {
               </div>
                             <div className="flex-1 p-4 overflow-y-auto">
                 <div className="space-y-2 mb-6">
+                  {role !== 'viewer' && (
                   <button onClick={() => {setCurrentTab('home'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'home' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
                     <Home size={24} /> ホーム
                   </button>
+                  )}
                   <button onClick={() => {setCurrentTab('schedule'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'schedule' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
                     <CalendarDays size={24} /> 行程表
                   </button>
+                  {role !== 'viewer' && (
                   <button onClick={() => {setCurrentTab('tasks'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'tasks' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
                       <CheckSquare size={24} /> タスク
                     </button>
+                  )}
                   {role !== 'viewer' && (
                   <button onClick={() => {setCurrentTab('roster'); setSidebarOpen(false);}} className={cn("w-full flex items-center gap-4 p-4 rounded-xl font-bold transition-colors", currentTab === 'roster' ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50 text-slate-700")}>
                     <Users size={24} /> 参加者名簿
@@ -424,9 +428,11 @@ export default function App() {
                 <button onClick={() => setShowRoleFilter(!showRoleFilter)} className={cn("p-2.5 rounded-full border transition-all shrink-0 shadow-sm", showRoleFilter ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50")}>
                   <Users size={18} />
                 </button>
+                {role !== 'viewer' && (
                 <button onClick={exportToExcel} className="p-2.5 rounded-full border transition-all shrink-0 shadow-sm bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100" title="Excel出力">
                   <Download size={18} />
                 </button>
+                )}
               </div>
 
               <AnimatePresence>

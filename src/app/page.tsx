@@ -33,35 +33,8 @@ export default function App() {
 
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [dates, setDates] = useState<string[]>([]);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
 
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const minSwipeDistance = 50;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    
-    if (isLeftSwipe || isRightSwipe) {
-      const eDates = data?.eventDates || dates;
-      const currentIndex = eDates.indexOf(selectedDate);
-      if (isLeftSwipe && currentIndex !== -1 && currentIndex < eDates.length - 1) {
-        setSelectedDate(eDates[currentIndex + 1]);
-      } else if (isRightSwipe && currentIndex > 0) {
-        setSelectedDate(eDates[currentIndex - 1]);
-      }
-    }
-  };
   const [roleFilter, setRoleFilter] = useState<string>('すべて');
   const [showRoleFilter, setShowRoleFilter] = useState<boolean>(false);
   const scheduleRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
@@ -176,7 +149,7 @@ export default function App() {
         (data?.schedule || []).map((s: ScheduleItem) => ({
           '日時': s.time,
           '活動内容': s.activity || '',
-          '役割ごとの指示': (s.roleNotes||[]).map((n: any) => `【${n.role}】${n.note}`).join('\n')
+          '役割ごとのメモ': (s.roleNotes||[]).map((n: any) => `【${n.role}】${n.note}`).join('\n')
         }))
       );
       const wb = XLSX.utils.book_new();
@@ -324,7 +297,7 @@ export default function App() {
         {currentTab === 'home' && (
           <motion.div 
             initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} className="pb-6"
-            onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
+            
           >
             {daysUntil !== null && (
               <div className="px-2 mb-6 mt-2">
@@ -530,7 +503,7 @@ export default function App() {
                                 } });
                               }} className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-slate-100" title="削除"><Trash2 size={18} /></button>
                               <button onClick={() => setScheduleModal({isOpen: true, schedule: item, mode: 'activity'})} className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100" title="活動内容を編集"><Edit2 size={18} /></button>
-                              <button onClick={() => setScheduleModal({isOpen: true, schedule: item, mode: 'role'})} className="p-2 text-slate-400 hover:text-emerald-600 rounded-lg hover:bg-slate-100" title="役割の指示を追加"><Plus size={18} /></button>
+                              <button onClick={() => setScheduleModal({isOpen: true, schedule: item, mode: 'role'})} className="p-2 text-slate-400 hover:text-emerald-600 rounded-lg hover:bg-slate-100" title="役割のメモを追加"><Plus size={18} /></button>
                             </div>
                           )}
                         </div>
@@ -550,7 +523,7 @@ export default function App() {
                                   <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-50 hover:opacity-100 transition-opacity">
                                     <button onClick={() => setScheduleModal({isOpen: true, schedule: item, mode: 'role', editRoleOnly: note.role})} className="p-1.5 hover:bg-black/5 rounded-lg"><Edit2 size={16} /></button>
                                     <button onClick={() => {
-                                      setGlobalConfirm({ isOpen: true, message: `${note.role} の指示のみを削除しますか？`, onConfirm: () => {
+                                      setGlobalConfirm({ isOpen: true, message: `${note.role} のメモのみを削除しますか？`, onConfirm: () => {
                                         const newSchedule = data!.schedule.map((s: ScheduleItem) => {
                                           if (s.id === item.id) {
                                             return { ...s, roleNotes: s.roleNotes.filter((n: any) => n.role !== note.role) };
@@ -1289,13 +1262,18 @@ function ScheduleModalContent({ scheduleModal, setScheduleModal, selectedDate, e
   
   useEffect(() => {
     if (scheduleModal.isOpen) {
-      setDraftRoleNotes(scheduleModal.schedule?.roleNotes || []);
+      if (scheduleModal.mode === 'role' && !scheduleModal.editRoleOnly) {
+        setDraftRoleNotes([{role: '', note: ''}]);
+      } else {
+        setDraftRoleNotes(scheduleModal.schedule?.roleNotes || []);
+      }
     }
   }, [scheduleModal.isOpen, scheduleModal.schedule]);
 
   if (!scheduleModal.isOpen) return null;
 
   const isRoleMode = scheduleModal.mode === 'role';
+  const isAddRoleMode = isRoleMode && !scheduleModal.editRoleOnly;
 
   const closeModal = () => setScheduleModal({isOpen: false, schedule: null});
 
@@ -1305,7 +1283,7 @@ function ScheduleModalContent({ scheduleModal, setScheduleModal, selectedDate, e
         <button onClick={closeModal} type="button" className="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors z-10">
           <X size={20} />
         </button>
-        <h2 className="text-xl font-bold text-slate-800 mb-4">{scheduleModal.editRoleOnly ? `${scheduleModal.editRoleOnly}の指示を編集` : isRoleMode ? '役割の指示を追加' : scheduleModal.schedule ? '行程を編集' : '行程を追加'}</h2>
+        <h2 className="text-xl font-bold text-slate-800 mb-4">{scheduleModal.editRoleOnly ? `${scheduleModal.editRoleOnly}のメモを編集` : isRoleMode ? '役割のメモを追加' : scheduleModal.schedule ? '行程を編集' : '行程を追加'}</h2>
         <form onSubmit={(e) => {
           e.preventDefault();
           const fd = new FormData(e.currentTarget);
@@ -1321,7 +1299,13 @@ function ScheduleModalContent({ scheduleModal, setScheduleModal, selectedDate, e
             activity = scheduleModal.schedule.activity;
           }
           
-          const roleNotes = draftRoleNotes.filter(n => n.role && n.note.trim() !== '');
+          let roleNotes;
+          if (isAddRoleMode) {
+            const newNotes = draftRoleNotes.filter(n => n.role && n.note.trim() !== '');
+            roleNotes = [...(scheduleModal.schedule.roleNotes || []), ...newNotes];
+          } else {
+            roleNotes = draftRoleNotes.filter(n => n.role && n.note.trim() !== '');
+          }
 
           if (scheduleModal.schedule) {
             const newSchedule = data!.schedule.map((s: any) => s.id === scheduleModal.schedule.id ? { ...s, time, activity, roleNotes } : s);
@@ -1366,7 +1350,7 @@ function ScheduleModalContent({ scheduleModal, setScheduleModal, selectedDate, e
           
           {(!isRoleMode && !scheduleModal.schedule) || isRoleMode ? (
             <div className="border-t pt-4 mt-2">
-              <label className="block text-sm font-bold text-slate-600 mb-3">役割ごとの指示</label>
+              <label className="block text-sm font-bold text-slate-600 mb-3">{isAddRoleMode ? '追加するメモ' : '役割ごとのメモ'}</label>
               <div className="space-y-3">
                 {draftRoleNotes.filter(note => !scheduleModal.editRoleOnly || note.role === scheduleModal.editRoleOnly).map((note, index) => (
                   <div key={index} className="flex flex-col gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl relative">
@@ -1397,7 +1381,7 @@ function ScheduleModalContent({ scheduleModal, setScheduleModal, selectedDate, e
                       }}
                       rows={2} 
                       className="w-full p-2 rounded-lg bg-white border border-slate-200 outline-none text-sm resize-none" 
-                      placeholder="指示をここに入力" 
+                      placeholder="メモをここに入力" 
                     />
                   </div>
                 ))}
@@ -1406,7 +1390,7 @@ function ScheduleModalContent({ scheduleModal, setScheduleModal, selectedDate, e
                   onClick={() => setDraftRoleNotes([...draftRoleNotes, {role: '', note: ''}])}
                   className="w-full py-3 rounded-xl border-2 border-dashed border-slate-200 text-slate-500 font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
                 >
-                  <Plus size={18} /> 役割の指示を追加
+                  <Plus size={18} /> 役割のメモを追加
                 </button>
               </div>
             </div>

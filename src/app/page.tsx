@@ -600,7 +600,16 @@ export default function App() {
                           <div key={task.id} className={cn("bg-white rounded-2xl p-5 shadow-sm border transition-all", task.completed ? "border-green-200 bg-green-50/30" : "border-slate-100")}>
                             <div className="flex gap-4 items-start">
                               <button 
-                                onClick={() => updateData({...data!, tasks: data!.tasks.map((t: TaskItem) => t.id === task.id ? {...t, completed: !t.completed} : t)} as AppData)} 
+                                onClick={() => {
+                                if (!task.completed) {
+                                  setGlobalConfirm({ isOpen: true, message: `「${task.name}」を完了にしますか？`, onConfirm: () => {
+                                    const now = new Date().toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                                    updateData({...data!, tasks: data!.tasks.map((t: TaskItem) => t.id === task.id ? {...t, completed: true, completedAt: now} : t)} as AppData);
+                                  } });
+                                } else {
+                                  updateData({...data!, tasks: data!.tasks.map((t: TaskItem) => t.id === task.id ? {...t, completed: false, completedAt: undefined} : t)} as AppData);
+                                }
+                              }} 
                                 className={cn("w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 mt-1 transition-colors", task.completed ? "bg-green-500 border-green-500 text-white" : "border-slate-300 text-transparent hover:border-green-500")}
                               >
                                 <Check size={18} />
@@ -1166,25 +1175,29 @@ function TaskModalContent({ taskModal, setTaskModal, taskAssigneesList, data, up
   const [fileUrls, setFileUrls] = useState<string[]>(['']);
   
   useEffect(() => {
-    if (taskModal.isOpen) {
-      setFileUrls(taskModal.task?.fileUrls && taskModal.task.fileUrls.length > 0 ? taskModal.task.fileUrls : ['']);
+    if (taskModal.isOpen && taskModal.task?.fileUrls) {
+      setFileUrls(taskModal.task.fileUrls.length > 0 ? [...taskModal.task.fileUrls, ''] : ['']);
+    } else if (taskModal.isOpen) {
+      setFileUrls(['']);
     }
   }, [taskModal.isOpen, taskModal.task]);
 
   if (!taskModal.isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setTaskModal({isOpen: false, task: null})}>
+      <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <h2 className="text-xl font-bold text-slate-800 mb-4">{taskModal.task ? 'タスクを編集' : 'タスクを追加'}</h2>
         <form onSubmit={(e) => {
           e.preventDefault();
           const fd = new FormData(e.currentTarget);
           const name = fd.get('name') as string;
-          const deadline = fd.get('deadline') as string;
+          const deadlineDate = fd.get('deadlineDate') as string;
+          const deadlineTime = fd.get('deadlineTime') as string;
           const assignee = fd.get('assignee') as string;
           const memo = fd.get('memo') as string;
           
+          const deadline = deadlineTime ? `${deadlineDate} ${deadlineTime}` : deadlineDate;
           const filteredUrls = fileUrls.map(u => u.trim()).filter(Boolean);
           
           if (taskModal.task) {
@@ -1212,39 +1225,50 @@ function TaskModalContent({ taskModal, setTaskModal, taskAssigneesList, data, up
           </div>
           <div className="flex gap-2">
             <div className="flex-1">
-              <label className="block text-sm font-bold text-slate-600 mb-1">期限 <span className="text-red-500">*</span></label>
-              <input type="datetime-local" name="deadline" required defaultValue={taskModal.task?.deadline ? taskModal.task.deadline.replace(' ', 'T') : ''} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm" />
+              <label className="block text-sm font-bold text-slate-600 mb-1">期限（日） <span className="text-red-500">*</span></label>
+              <input type="date" name="deadlineDate" required defaultValue={taskModal.task?.deadline ? taskModal.task.deadline.split(' ')[0] : ''} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm" />
             </div>
-            <div className="flex-1">
-              <label className="block text-sm font-bold text-slate-600 mb-1">担当者 <span className="text-red-500">*</span></label>
-              <select name="assignee" required defaultValue={taskModal.task?.assignee} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none">
-                {taskAssigneesList.map((a: string) => <option key={a} value={a}>{a}</option>)}
-              </select>
+            <div className="flex-[0.7]">
+              <label className="block text-sm font-bold text-slate-600 mb-1">時間</label>
+              <input type="time" name="deadlineTime" defaultValue={taskModal.task?.deadline && taskModal.task.deadline.includes(' ') ? taskModal.task.deadline.split(' ')[1] : ''} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-600 mb-1">メモ</label>
-            <textarea name="memo" rows={2} defaultValue={taskModal.task?.memo} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none resize-none" placeholder="補足事項など" />
+            <label className="block text-sm font-bold text-slate-600 mb-1">担当者 <span className="text-red-500">*</span></label>
+            <select name="assignee" required defaultValue={taskModal.task?.assignee} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none">
+              {taskAssigneesList.map((a: string) => <option key={a} value={a}>{a}</option>)}
+            </select>
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-600 mb-1">関連URL</label>
+            <label className="block text-sm font-bold text-slate-600 mb-1">関連リンク (任意)</label>
             <div className="space-y-2">
               {fileUrls.map((url, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <input type="url" value={url} onChange={e => {
-                    const newUrls = [...fileUrls];
-                    newUrls[i] = e.target.value;
-                    setFileUrls(newUrls);
-                  }} className="flex-1 p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm" placeholder="https://" />
-                  <button type="button" onClick={() => {
-                    setFileUrls(fileUrls.filter((_, idx) => idx !== i));
-                  }} className="text-slate-400 hover:text-red-500 p-2"><Trash2 size={18} /></button>
+                <div key={i} className="flex gap-2">
+                  <input 
+                    value={url}
+                    onChange={(e) => {
+                      const newUrls = [...fileUrls];
+                      newUrls[i] = e.target.value;
+                      if (i === fileUrls.length - 1 && e.target.value) {
+                        newUrls.push('');
+                      }
+                      setFileUrls(newUrls);
+                    }}
+                    placeholder="https://..." 
+                    className="flex-1 p-2.5 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm" 
+                  />
+                  {i < fileUrls.length - 1 && (
+                    <button type="button" onClick={() => setFileUrls(fileUrls.filter((_, idx) => idx !== i))} className="p-2 text-slate-400 hover:text-red-500">
+                      <X size={18} />
+                    </button>
+                  )}
                 </div>
               ))}
-              <button type="button" onClick={() => setFileUrls([...fileUrls, ''])} className="text-sm font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 mt-1">
-                <Plus size={16} /> 関連URLを追加
-              </button>
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-slate-600 mb-1">メモ (任意)</label>
+            <textarea name="memo" defaultValue={taskModal.task?.memo} rows={3} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm resize-none" />
           </div>
           
           <div className="flex justify-end gap-2 pt-4 border-t">
@@ -1256,7 +1280,6 @@ function TaskModalContent({ taskModal, setTaskModal, taskAssigneesList, data, up
     </div>
   );
 }
-
 function ScheduleModalContent({ scheduleModal, setScheduleModal, selectedDate, eventDatesList, rolesList, data, updateData }: any) {
   const [draftRoleNotes, setDraftRoleNotes] = useState<{role: string; note: string}[]>([]);
   

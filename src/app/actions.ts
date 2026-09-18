@@ -12,7 +12,7 @@ const redis = new Redis({
 })
 
 export type ScheduleItem = { id: string; time: string; activity: string; roleNotes: { role: string; note: string; }[]; };
-export type TaskItem = { id: string; name: string; deadline: string; assignee: string; memo: string; fileUrl?: string; fileUrls?: string[]; completed: boolean; };
+export type TaskItem = { id: string; name: string; deadline: string; assignee: string; memo: string; fileUrl?: string; fileUrls?: string[]; completed: boolean; completedAt?: string; completedBy?: string; };
 
 
 export type Transaction = {

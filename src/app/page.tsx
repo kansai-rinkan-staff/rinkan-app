@@ -20,7 +20,7 @@ export default function App() {
   const [data, setData] = useState<AppData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [globalConfirm, setGlobalConfirm] = useState<{isOpen: boolean, message: string, onConfirm: () => void}>({isOpen: false, message: '', onConfirm: () => {}});
+  const [globalConfirm, setGlobalConfirm] = useState<{isOpen: boolean, message: string, onConfirm: () => void, confirmText?: string}>({isOpen: false, message: '', onConfirm: () => {}});
   const [globalPrompt, setGlobalPrompt] = useState<{isOpen: boolean, message: string, value: string}>({isOpen: false, message: '', value: ''});
   const [currentTab, setCurrentTab] = useState<'home' | 'schedule' | 'tasks' | 'roster' | 'groups' | 'duties' | 'settings' | 'accounting'>('home');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -602,9 +602,9 @@ export default function App() {
                               <button 
                                 onClick={() => {
                                 if (!task.completed) {
-                                  setGlobalConfirm({ isOpen: true, message: `「${task.name}」を完了にしますか？`, onConfirm: () => {
+                                  setGlobalConfirm({ isOpen: true, message: `「${task.name}」を完了にしますか？`, confirmText: "完了", onConfirm: () => {
                                     const now = new Date().toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                                    updateData({...data!, tasks: data!.tasks.map((t: TaskItem) => t.id === task.id ? {...t, completed: true, completedAt: now} : t)} as AppData);
+                                    updateData({...data!, tasks: data!.tasks.map((t: TaskItem) => t.id === task.id ? {...t, completed: true, completedAt: now, completedBy: sessionName} : t)} as AppData);
                                   } });
                                 } else {
                                   updateData({...data!, tasks: data!.tasks.map((t: TaskItem) => t.id === task.id ? {...t, completed: false, completedAt: undefined} : t)} as AppData);
@@ -625,6 +625,12 @@ export default function App() {
                                     <Users size={12} />
                                     {task.assignee}
                                   </div>
+                                  {task.completed && task.completedAt && (
+                                    <div className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg bg-green-50 text-green-700 border border-green-100">
+                                      <Check size={12} />
+                                      {task.completedAt} {task.completedBy ? `(${task.completedBy})` : ''} 完了
+                                    </div>
+                                  )}
                                 </div>
                                 {task.memo && (
                                   <div className="text-sm font-medium text-slate-500 bg-slate-50 p-3 rounded-xl mt-2 whitespace-pre-wrap border border-slate-100">

@@ -679,12 +679,14 @@ export default function App() {
                     const firstDay = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1);
                     const lastDay = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0);
                     for (let i = 0; i < firstDay.getDay(); i++) days.push(<div key={`empty-${i}`} className="p-2"></div>);
+                    const today = new Date();
                     for (let i = 1; i <= lastDay.getDate(); i++) {
                       const dateStr = `${calendarMonth.getFullYear()}-${String(calendarMonth.getMonth()+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
                       const dayTasks = data?.tasks.filter((t: TaskItem) => t.deadline.startsWith(dateStr)) || [];
+                      const isToday = calendarMonth.getFullYear() === today.getFullYear() && calendarMonth.getMonth() === today.getMonth() && i === today.getDate();
                       days.push(
-                        <div key={i} className="min-h-[80px] p-1 border border-slate-100 rounded-lg flex flex-col relative group hover:border-blue-300 transition-colors">
-                          <span className="text-xs font-bold text-slate-500 mb-1 pl-1">{i}</span>
+                        <div key={i} className={cn("min-h-[80px] p-1 border rounded-lg flex flex-col relative group transition-colors", isToday ? "border-blue-500 bg-blue-50/30" : "border-slate-100 hover:border-blue-300")}>
+                          <span className={cn("text-xs font-bold mb-1 pl-1 w-6 h-6 flex items-center justify-center rounded-full", isToday ? "bg-blue-600 text-white" : "text-slate-500")}>{i}</span>
                           <div className="flex-1 overflow-y-auto hide-scrollbar space-y-1">
                             {dayTasks.map((t: TaskItem) => (
                               <div key={t.id} onClick={() => setTaskModal({isOpen: true, task: t})} className={cn("text-[10px] p-1 rounded font-bold truncate cursor-pointer", t.completed ? "bg-green-100 text-green-700" : "bg-blue-50 text-blue-700 hover:bg-blue-100")}>

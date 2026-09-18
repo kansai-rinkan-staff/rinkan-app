@@ -277,7 +277,7 @@ export default function App() {
           <h1 className="text-xl font-bold tracking-wider">{currentTab === 'home' ? 'ホーム' : currentTab === 'schedule' ? '行程表' : currentTab === 'tasks' ? 'タスク' : currentTab === 'roster' ? '参加者名簿' : currentTab === 'groups' ? '班・部屋割' : currentTab === 'duties' ? '配車・役割分担' : currentTab === 'accounting' ? '会計' : '設定'}</h1>
         </div>
                 <div className="flex items-center gap-3">
-          {currentTab === 'schedule' && role !== 'viewer' && (
+          {(currentTab === 'schedule' || currentTab === 'tasks') && role !== 'viewer' && (
             <button onClick={exportToExcel} className="p-2 text-white hover:bg-white/20 rounded-xl transition-colors" title="Excel出力">
               <Download size={20} />
             </button>

@@ -1132,7 +1132,7 @@ export default function App() {
                 <button onClick={() => {
                   globalConfirm.onConfirm();
                   setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}});
-                }} className="px-5 py-2.5 rounded-xl font-bold bg-rose-500 text-white hover:bg-rose-600 shadow-sm transition-colors">実行する</button>
+                }} className="px-5 py-2.5 rounded-xl font-bold bg-rose-500 text-white hover:bg-rose-600 shadow-sm transition-colors">{globalConfirm.confirmText || "実行する"}</button>
               </div>
             </motion.div>
           </div>

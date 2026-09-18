@@ -498,7 +498,7 @@ export default function App() {
                           {role === 'admin' && (
                             <div className="flex gap-1 shrink-0 ml-auto">
                               <button onClick={() => {
-                                setGlobalConfirm({ isOpen: true, message: 'この行程を完全に削除しますか？', onConfirm: () => {
+                                setGlobalConfirm({ isOpen: true, message: 'この行程を完全に削除しますか？', confirmText: '削除', onConfirm: () => {
                                   updateData({...data!, schedule: data!.schedule!.filter((s: ScheduleItem) => s.id !== item.id)} as AppData);
                                 } });
                               }} className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-slate-100" title="削除"><Trash2 size={18} /></button>
@@ -649,7 +649,7 @@ export default function App() {
                                 <div className="flex flex-col gap-1 shrink-0">
                                   <button onClick={() => setTaskModal({isOpen: true, task})} className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100"><Edit2 size={18} /></button>
                                   <button onClick={() => {
-                                    setGlobalConfirm({ isOpen: true, message: '本当に削除しますか？', onConfirm: () => updateData({...data!, tasks: data!.tasks.filter((t: TaskItem) => t.id !== task.id)} as AppData) });
+                                    setGlobalConfirm({ isOpen: true, message: '本当に削除しますか？', confirmText: '削除', onConfirm: () => updateData({...data!, tasks: data!.tasks.filter((t: TaskItem) => t.id !== task.id)} as AppData) });
                                   }} className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-slate-100"><Trash2 size={18} /></button>
                                 </div>
                               )}
@@ -1122,8 +1122,11 @@ export default function App() {
       {/* Global Confirm Modal */}
       <AnimatePresence>
         {globalConfirm.isOpen && (
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setGlobalConfirm({isOpen: false, message: "", onConfirm: () => {}})}>
+
+            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
+
+              <button onClick={() => setGlobalConfirm({isOpen: false, message: "", onConfirm: () => {}})} className="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors z-10"><X size={20}/></button>
               <div className="flex items-center gap-3 text-rose-600 mb-4">
                 <AlertCircle size={24} />
                 <h3 className="font-bold text-lg text-slate-800">確認</h3>

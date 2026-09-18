@@ -1130,7 +1130,7 @@ export default function App() {
               </div>
               <p className="text-slate-600 font-medium mb-6 whitespace-pre-wrap">{globalConfirm.message}</p>
               <div className="flex justify-end gap-3">
-                <button onClick={() => setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}})} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">キャンセル</button>
+                
                 <button onClick={() => {
                   globalConfirm.onConfirm();
                   setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}});
@@ -1194,8 +1194,9 @@ function TaskModalContent({ taskModal, setTaskModal, taskAssigneesList, data, up
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setTaskModal({isOpen: false, task: null})}>
-      <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <h2 className="text-xl font-bold text-slate-800 mb-4">{taskModal.task ? 'タスクを編集' : 'タスクを追加'}</h2>
+      <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto relative" onClick={e => e.stopPropagation()}>
+        <button onClick={() => setTaskModal({isOpen: false, task: null})} type="button" className="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors z-10"><X size={20} /></button>
+        <h2 className="text-xl font-bold text-slate-800 mb-4 mt-2">{taskModal.task ? 'タスクを編集' : 'タスクを追加'}</h2>
         <form onSubmit={(e) => {
           e.preventDefault();
           const fd = new FormData(e.currentTarget);
@@ -1280,7 +1281,7 @@ function TaskModalContent({ taskModal, setTaskModal, taskAssigneesList, data, up
           </div>
           
           <div className="flex justify-end gap-2 pt-4 border-t">
-            <button type="button" onClick={() => setTaskModal({isOpen: false, task: null})} className="px-5 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100">キャンセル</button>
+            
             <button type="submit" className="px-5 py-2.5 rounded-xl font-bold text-white bg-blue-600">保存する</button>
           </div>
         </form>
@@ -1495,7 +1496,7 @@ function UserModalContent({ userModal, setUserModal, setUsersList }: any) {
           </div>
           
           <div className="flex justify-end gap-2 pt-4 border-t mt-4">
-            <button type="button" onClick={() => setUserModal({isOpen: false, user: null})} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">キャンセル</button>
+            
             <button type="submit" className="px-5 py-2.5 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors">保存する</button>
           </div>
         </form>

@@ -331,8 +331,8 @@ export default function AccountingManager({ data, setData, updateData }: Props) 
       {/* Transaction Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl overflow-y-auto max-h-[90vh]">
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setIsModalOpen(false)}>
+            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl overflow-y-auto max-h-[90vh] relative" onClick={e => e.stopPropagation()}>
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-slate-800">{editingTransaction ? '明細の編集' : '新しい明細を追加'}</h3>
                 <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full"><X size={20}/></button>
@@ -392,15 +392,16 @@ export default function AccountingManager({ data, setData, updateData }: Props) 
       {/* Global Confirm Modal */}
       <AnimatePresence>
         {globalConfirm.isOpen && (
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
-              <div className="flex items-center gap-3 text-rose-600 mb-4">
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}})}>
+            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl relative" onClick={e => e.stopPropagation()}>
+              <button onClick={() => setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}})} className="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors z-10"><X size={20}/></button>
+              <div className="flex items-center gap-3 text-rose-600 mb-4 mt-2">
                 <AlertCircle size={24} />
                 <h3 className="font-bold text-lg text-slate-800">確認</h3>
               </div>
               <p className="text-slate-600 font-medium mb-6 whitespace-pre-wrap">{globalConfirm.message}</p>
               <div className="flex justify-end gap-3">
-                <button onClick={() => setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}})} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors">キャンセル</button>
+                
                 <button onClick={() => {
                   globalConfirm.onConfirm();
                   setGlobalConfirm({isOpen: false, message: '', onConfirm: () => {}});

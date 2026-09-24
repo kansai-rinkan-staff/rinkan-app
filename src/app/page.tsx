@@ -299,7 +299,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Header */}
-      <div className={`\${isPastProject ? 'bg-rose-600' : 'bg-blue-600'} text-white p-3 pb-4 pt-[max(env(safe-area-inset-top,0px),12px)] shadow-md rounded-b-3xl sticky top-0 z-30 flex items-center justify-between`}>
+      <div className={`${isPastProject ? "bg-rose-600" : "bg-blue-600"} text-white p-3 pb-4 pt-[max(env(safe-area-inset-top,0px),12px)] shadow-md rounded-b-3xl sticky top-0 z-30 flex items-center justify-between`}>
         <div className="flex items-center gap-3 relative">
           <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-white hover:bg-white/20 rounded-xl transition-colors">
             <Menu size={24} />

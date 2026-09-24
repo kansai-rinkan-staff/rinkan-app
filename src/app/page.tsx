@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { AlertCircle, Menu, RotateCw, CloudRain, Home, Edit2, Check, X, Plus, Calendar, CheckSquare, Clock, Settings, Users, Eye, Shield, Edit3, UserPlus, Link2, Copy, Component, Car, LogOut, Type, Trash2, CalendarDays, Link as LinkIcon, FileText, ChevronLeft, ChevronRight, AlignLeft, Download } from 'lucide-react';
+import { AlertCircle, Menu, RotateCw, CloudRain, Home, Edit2, Check, X, Plus, Calendar, CheckSquare, Clock, Settings, Users, Eye, Shield, Edit3, UserPlus, Link2, Copy, Component, Car, LogOut, Type, Trash2, CalendarDays, Link as LinkIcon, FileText, ChevronLeft, ChevronRight, AlignLeft, Download , ChevronDown } from 'lucide-react';
 import { getAppData, saveAppData as apiSaveAppData, getProjects, createProject, Project, AppData, ScheduleItem, TaskItem, getSessionRole, logout, getUsers, addUser, deleteUser, updateViewerPassword, generateInviteToken, getViewerPassword, User } from './actions';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -292,11 +292,50 @@ export default function App() {
 
       {/* Header */}
       <div className="bg-blue-600 text-white p-3 pb-4 pt-[max(env(safe-area-inset-top,0px),12px)] shadow-md rounded-b-3xl sticky top-0 z-30 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative">
           <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-white hover:bg-white/20 rounded-xl transition-colors">
             <Menu size={24} />
           </button>
-          <h1 className="text-xl font-bold tracking-wider">{currentTab === 'home' ? 'ホーム' : currentTab === 'schedule' ? '行程表' : currentTab === 'tasks' ? 'タスク' : currentTab === 'roster' ? '参加者名簿' : currentTab === 'groups' ? '班・部屋割' : currentTab === 'duties' ? '配車・役割分担' : currentTab === 'accounting' ? '会計' : '設定'}</h1>
+          <div className="flex flex-col">
+            <h1 className="text-xl font-bold tracking-wider leading-tight">{currentTab === 'home' ? 'ホーム' : currentTab === 'schedule' ? '行程表' : currentTab === 'tasks' ? 'タスク' : currentTab === 'roster' ? '参加者名簿' : currentTab === 'groups' ? '班・部屋割' : currentTab === 'duties' ? '配車・役割分担' : currentTab === 'accounting' ? '会計' : '設定'}</h1>
+            {role !== 'viewer' && projects.length > 0 && (
+              <div 
+                className="text-xs text-blue-100 flex items-center gap-1 cursor-pointer hover:text-white transition-colors mt-0.5"
+                onClick={() => setIsProjectDropdownOpen(!isProjectDropdownOpen)}
+              >
+                {projects.find(p => p.id === currentProjectId)?.name || '年度選択'} <ChevronDown size={12} />
+              </div>
+            )}
+            {isProjectDropdownOpen && (
+              <div className="absolute top-full left-10 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                <div className="max-h-60 overflow-y-auto">
+                  {projects.map(p => (
+                    <div 
+                      key={p.id}
+                      onClick={() => {
+                        setCurrentProjectId(p.id);
+                        setIsProjectDropdownOpen(false);
+                      }}
+                      className={`px-4 py-3 cursor-pointer text-sm font-bold transition-colors ${p.id === currentProjectId ? 'bg-blue-50 text-blue-700' : 'text-slate-700 hover:bg-slate-50'}`}
+                    >
+                      {p.name}
+                    </div>
+                  ))}
+                </div>
+                {role === 'admin' && (
+                  <div 
+                    onClick={() => {
+                      setIsProjectDropdownOpen(false);
+                      setCreateProjectModal({isOpen: true});
+                    }}
+                    className="px-4 py-3 border-t border-slate-100 cursor-pointer text-sm font-bold text-blue-600 hover:bg-blue-50 transition-colors"
+                  >
+                    ＋ 新しい年度を作成
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
                 <div className="flex items-center gap-3">
           {(currentTab === 'schedule' || currentTab === 'tasks') && role !== 'viewer' && (

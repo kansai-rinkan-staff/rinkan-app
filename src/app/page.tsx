@@ -2,8 +2,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { AlertCircle, Menu, RotateCw, CloudRain, Home, Edit2, Check, X, Plus, Calendar, CheckSquare, Clock, Settings, Users, Eye, Shield, Edit3, UserPlus, Link2, Copy, Component, Car, LogOut, Type, Trash2, CalendarDays, Link as LinkIcon, FileText, ChevronLeft, ChevronRight, AlignLeft, Download , ChevronDown } from 'lucide-react';
-import { getAppData, saveAppData as apiSaveAppData, getProjects, createProject, Project, AppData, ScheduleItem, TaskItem, getSessionRole, logout, getUsers, addUser, deleteUser, updateViewerPassword, generateInviteToken, getViewerPassword, User } from './actions';
+import { AlertCircle, Menu, RotateCw, CloudRain, Home, Edit2, Check, X, Plus, Calendar, CheckSquare, Clock, Settings, Users, Eye, Shield, Edit3, UserPlus, Link2, Copy, Component, Car, LogOut, Type, Trash2, CalendarDays, Link as LinkIcon, FileText, ChevronLeft, ChevronRight, AlignLeft, Download , ChevronDown , AlertTriangle, FolderOpen } from 'lucide-react';
+import { getAppData, saveAppData as apiSaveAppData, getProjects, createProject, Project, AppData, ScheduleItem, TaskItem, getSessionRole, logout, getUsers, addUser, deleteUser, updateViewerPassword, generateInviteToken, getViewerPassword, User, renameProject, deleteProject } from './actions';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -46,7 +46,7 @@ export default function App() {
   const [taskView, setTaskView] = useState<'list'|'calendar'>('list');
   const [calendarMonth, setCalendarMonth] = useState(new Date());
 
-  const [activeSetting, setActiveSetting] = useState<'menu'|'font'|'schedule'|'roles'|'tasks'|'accounts'|'accountingSettings'>('menu');
+  const [activeSetting, setActiveSetting] = useState<'menu'|'font'|'schedule'|'roles'|'tasks'|'accounts'|'accountingSettings'|'projects'>('menu');
 
   const [taskModal, setTaskModal] = useState<{isOpen: boolean, task: TaskItem | null}>({isOpen: false, task: null});
   const [userModal, setUserModal] = useState<{isOpen: boolean, user: User | null}>({isOpen: false, user: null});
@@ -61,7 +61,13 @@ export default function App() {
     const p = await getProjects();
     setProjects(p);
     const latestId = p.length > 0 ? p[p.length - 1].id : '';
-    setCurrentProjectId(latestId);
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlProjectId = urlParams.get('projectId');
+    let targetId = latestId;
+    if (urlProjectId && p.some(proj => proj.id === urlProjectId)) {
+      targetId = urlProjectId;
+    }
+    setCurrentProjectId(targetId);
   };
   
   useEffect(() => {
@@ -212,6 +218,8 @@ export default function App() {
   };
   const daysUntil = getDaysUntil();
 
+  const latestProjectId = projects.length > 0 ? projects[projects.length - 1].id : '';
+  const isPastProject = currentProjectId && latestProjectId && currentProjectId !== latestProjectId;
   return (
     <div className={cn("min-h-screen bg-slate-50 font-sans pb-24", fontSize)}>
       
@@ -291,7 +299,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="bg-blue-600 text-white p-3 pb-4 pt-[max(env(safe-area-inset-top,0px),12px)] shadow-md rounded-b-3xl sticky top-0 z-30 flex items-center justify-between">
+      <div className={`\${isPastProject ? 'bg-rose-600' : 'bg-blue-600'} text-white p-3 pb-4 pt-[max(env(safe-area-inset-top,0px),12px)] shadow-md rounded-b-3xl sticky top-0 z-30 flex items-center justify-between`}>
         <div className="flex items-center gap-3 relative">
           <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-white hover:bg-white/20 rounded-xl transition-colors">
             <Menu size={24} />
@@ -314,6 +322,7 @@ export default function App() {
                       key={p.id}
                       onClick={() => {
                         setCurrentProjectId(p.id);
+                        window.history.pushState(null, '', '?projectId=' + p.id);
                         setIsProjectDropdownOpen(false);
                       }}
                       className={`px-4 py-3 cursor-pointer text-sm font-bold transition-colors ${p.id === currentProjectId ? 'bg-blue-50 text-blue-700' : 'text-slate-700 hover:bg-slate-50'}`}
@@ -820,6 +829,11 @@ export default function App() {
                         <div className="flex items-center gap-3 font-bold text-slate-700"><CheckSquare className="text-blue-500" /> 会計設定 (単価・口座・カテゴリ)</div>
                         <ChevronRight className="text-slate-400" />
                       </button>
+                      <div className="h-px bg-slate-100 mx-4"></div>
+                      <button onClick={() => setActiveSetting('projects')} className="w-full flex items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition-colors">
+                        <div className="flex items-center gap-3 font-bold text-slate-700"><FolderOpen className="text-blue-500" /> プロジェクト（年度）管理</div>
+                        <ChevronRight className="text-slate-400" />
+                      </button>
                     </>
                   )}
                 </div>
@@ -956,6 +970,76 @@ export default function App() {
               </div>
             )}
 
+
+            {activeSetting === 'projects' && role === 'admin' && (
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <h3 className="font-bold text-slate-700 mb-4 flex items-center gap-2"><FolderOpen className="text-blue-500" /> プロジェクト（年度）管理</h3>
+                <div className="space-y-4">
+                  {projects.map((p) => (
+                    <div key={p.id} className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                      <div className="flex-1">
+                        <input 
+                          type="text" 
+                          defaultValue={p.name}
+                          onBlur={async (e) => {
+                            const newName = e.target.value;
+                            if (newName && newName !== p.name) {
+                              toast.loading('名前を変更中...', { id: 'rename' });
+                              const res = await renameProject(p.id, newName);
+                              if (res.success) {
+                                toast.success('名前を変更しました', { id: 'rename' });
+                                setProjects(projects.map(proj => proj.id === p.id ? { ...proj, name: newName } : proj));
+                              } else {
+                                toast.error('変更に失敗しました', { id: 'rename' });
+                              }
+                            }
+                          }}
+                          className="font-bold text-slate-800 bg-transparent outline-none w-full border-b border-transparent focus:border-blue-300 transition-colors" 
+                        />
+                        <div className="text-xs text-slate-400 mt-1">ID: {p.id}</div>
+                      </div>
+                      <button 
+                        onClick={() => {
+                          if (projects.length <= 1) {
+                            toast.error('最後のプロジェクトは削除できません');
+                            return;
+                          }
+                          setGlobalConfirm({
+                            isOpen: true,
+                            message: `${p.name} を完全に削除しますか？`,
+                            confirmText: '削除',
+                            onConfirm: async () => {
+                              toast.loading('削除中...', { id: 'deleteProject' });
+                              const res = await deleteProject(p.id);
+                              if (res.success) {
+                                toast.success('削除しました', { id: 'deleteProject' });
+                                setProjects(projects.filter(proj => proj.id !== p.id));
+                                if (currentProjectId === p.id) {
+                                  const latest = projects[projects.length - 1];
+                                  setCurrentProjectId(latest.id);
+                                  window.history.pushState(null, '', '?projectId=' + latest.id);
+                                }
+                              } else {
+                                toast.error(res.error || '削除に失敗しました', { id: 'deleteProject' });
+                              }
+                            }
+                          });
+                        }}
+                        className={`p-2 shrink-0 ml-4 rounded-xl transition-colors ${projects.length <= 1 ? 'text-slate-300' : 'text-red-500 hover:bg-red-50'}`}
+                        disabled={projects.length <= 1}
+                        title="削除"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-slate-500 mt-4">
+                  ※名前を変更するには、入力枠を書き換えてフォーカスを外して（他の場所をクリックして）ください。
+                </p>
+              </div>
+            )}
+  
             {activeSetting === 'accountingSettings' && role === 'admin' && (
               <div className="space-y-6">
                 

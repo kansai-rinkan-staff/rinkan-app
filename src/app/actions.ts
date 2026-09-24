@@ -1840,3 +1840,27 @@ export async function getViewerPassword() {
   const settings = await redis.get<{viewerPassword: string}>('rinkan_settings_v6');
   return settings?.viewerPassword || 'kansai2026';
 }
+
+export async function renameProject(id: string, newName: string) {
+  const projects = await getProjects();
+  const proj = projects.find(p => p.id === id);
+  if (proj) {
+    proj.name = newName;
+    await redis.set("rinkan_projects", projects);
+    revalidatePath("/");
+    return { success: true };
+  }
+  return { success: false, error: 'Project not found' };
+}
+
+export async function deleteProject(id: string) {
+  let projects = await getProjects();
+  if (projects.length <= 1) return { success: false, error: '最後のプロジェクトは削除できません' };
+  
+  projects = projects.filter(p => p.id !== id);
+  await redis.set("rinkan_projects", projects);
+  await redis.del(`rinkan_data_v8_${id}`);
+  
+  revalidatePath("/");
+  return { success: true };
+}

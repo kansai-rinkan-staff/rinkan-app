@@ -11,6 +11,7 @@ const redis = new Redis({
   token: redisToken,
 })
 
+export type Project = { id: string; name: string; createdAt: number; };
 export type ScheduleItem = { id: string; time: string; activity: string; roleNotes: { role: string; note: string; }[]; };
 export type TaskItem = { id: string; name: string; deadline: string; assignee: string; memo: string; fileUrl?: string; fileUrls?: string[]; completed: boolean; completedAt?: string; completedBy?: string; };
 
@@ -1638,9 +1639,30 @@ const DEFAULT_DATA: AppData = {
   ]
 };
 
-export async function getAppData(): Promise<AppData> {
+export async function getProjects(): Promise<Project[]> {
   try {
-    const data = await redis.get<AppData>("rinkan_data_v8");
+    let projects = await redis.get<Project[]>("rinkan_projects");
+    if (!projects || projects.length === 0) {
+      // Automatic migration
+      const legacyData = await redis.get<AppData>("rinkan_data_v8");
+      const initialProject = { id: '2026', name: '2026年度', createdAt: Date.now() };
+      projects = [initialProject];
+      await redis.set("rinkan_projects", projects);
+      if (legacyData) {
+        await redis.set(`rinkan_data_v8_2026`, legacyData);
+      }
+    }
+    return projects;
+  } catch (e) {
+    console.error("Redis Error", e);
+    return [];
+  }
+}
+
+export async function getAppData(projectId: string): Promise<AppData> {
+  try {
+    if (!projectId) return DEFAULT_DATA;
+    const data = await redis.get<AppData>(`rinkan_data_v8_${projectId}`);
     return data || DEFAULT_DATA;
   } catch (e) {
     console.error("Redis Error", e);
@@ -1648,10 +1670,39 @@ export async function getAppData(): Promise<AppData> {
   }
 }
 
-export async function saveAppData(data: AppData) {
-  await redis.set("rinkan_data_v8", data);
+export async function saveAppData(projectId: string, data: AppData) {
+  if (!projectId) return { success: false, error: 'No project ID provided' };
+  await redis.set(`rinkan_data_v8_${projectId}`, data);
   revalidatePath("/");
   return { success: true };
+}
+
+export async function createProject(name: string, copyFromId?: string) {
+  const projects = await getProjects();
+  const newId = Date.now().toString();
+  const newProject = { id: newId, name, createdAt: Date.now() };
+  
+  let newData = { ...DEFAULT_DATA };
+  
+  if (copyFromId) {
+    const sourceData = await getAppData(copyFromId);
+    newData = {
+      ...DEFAULT_DATA,
+      schedule: sourceData.schedule || [],
+      tasks: (sourceData.tasks || []).map(t => ({ ...t, completed: false, completedAt: undefined, completedBy: undefined })),
+      roles: sourceData.roles,
+      taskAssignees: sourceData.taskAssignees,
+      eventDates: sourceData.eventDates,
+      startDate: sourceData.startDate,
+      // Clear out rosters, accounting, and other runtime data
+    };
+  }
+  
+  await redis.set(`rinkan_data_v8_${newId}`, newData);
+  projects.push(newProject);
+  await redis.set("rinkan_projects", projects);
+  revalidatePath("/");
+  return { success: true, project: newProject };
 }
 
 // --- Auth & Account Management ---

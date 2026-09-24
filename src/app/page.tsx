@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { AlertCircle, Menu, RotateCw, CloudRain, Home, Edit2, Check, X, Plus, Calendar, CheckSquare, Clock, Settings, Users, Eye, Shield, Edit3, UserPlus, Link2, Copy, Component, Car, LogOut, Type, Trash2, CalendarDays, Link as LinkIcon, FileText, ChevronLeft, ChevronRight, AlignLeft, Download } from 'lucide-react';
-import { getAppData, saveAppData, AppData, ScheduleItem, TaskItem, getSessionRole, logout, getUsers, addUser, deleteUser, updateViewerPassword, generateInviteToken, getViewerPassword, User } from './actions';
+import { getAppData, saveAppData as apiSaveAppData, getProjects, createProject, Project, AppData, ScheduleItem, TaskItem, getSessionRole, logout, getUsers, addUser, deleteUser, updateViewerPassword, generateInviteToken, getViewerPassword, User } from './actions';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -18,6 +18,10 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 
 export default function App() {
   const [data, setData] = useState<AppData | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [currentProjectId, setCurrentProjectId] = useState<string>('');
+  const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
+  const [createProjectModal, setCreateProjectModal] = useState<{isOpen: boolean}>({isOpen: false});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [globalConfirm, setGlobalConfirm] = useState<{isOpen: boolean, message: string, onConfirm: () => void, confirmText?: string}>({isOpen: false, message: '', onConfirm: () => {}});
@@ -70,8 +74,9 @@ export default function App() {
   };
 
   const fetchData = async () => {
+    if (!currentProjectId) return;
     try {
-      const res = await getAppData();
+      const res = await getAppData(currentProjectId);
       // Auto-migrate "飯盒・キャンプファイヤー" -> "飯・キャ"
       if (res.roles) {
         res.roles = res.roles.map((r: string) => r === '飯盒・キャンプファイヤー' ? '飯・キャ' : r).filter((r: string) => r !== '全員' && r !== '責任者');
@@ -101,11 +106,13 @@ export default function App() {
     }
   };
 
+  const saveAppData = async (newData: AppData) => { return apiSaveAppData(currentProjectId, newData); };
+
   const updateData = async (newData: AppData) => {
     setData(newData);
     setSaving(true);
     try {
-      await saveAppData(newData);
+      await apiSaveAppData(currentProjectId, newData);
       const uniqueDates = Array.from(new Set(newData.schedule.map((s: ScheduleItem) => s.time.split(' ')[0]))).sort() as string[];
       setDates(uniqueDates);
       if (!uniqueDates.includes(selectedDate) && uniqueDates.length > 0) {
@@ -292,7 +299,7 @@ export default function App() {
         </div>
       </div>
 
-      <div className="w-full max-w-7xl mx-auto p-4 md:p-6 relative z-0 -mt-2">
+      <div className="w-full max-w-7xl mx-auto p-4 md:p-6 relative z-0 -mt-2" onClick={() => isProjectDropdownOpen && setIsProjectDropdownOpen(false)}>
         
         {currentTab === 'home' && (
           <motion.div 
@@ -1118,6 +1125,53 @@ export default function App() {
         data={data}
         updateData={updateData}
       />
+
+      {/* Create Project Modal */}
+      <AnimatePresence>
+        {createProjectModal.isOpen && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setCreateProjectModal({isOpen: false})}>
+            <motion.div initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.95}} className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl relative" onClick={e => e.stopPropagation()}>
+              <button onClick={() => setCreateProjectModal({isOpen: false})} className="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors z-10"><X size={20}/></button>
+              <h2 className="text-xl font-bold text-slate-800 mb-4 mt-2">新しい年度を作成</h2>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const fd = new FormData(e.currentTarget);
+                const name = fd.get('name') as string;
+                const copyFromId = fd.get('copyFromId') as string;
+                
+                toast.loading('作成中...', { id: 'createProject' });
+                const res = await createProject(name, copyFromId || undefined);
+                if (res.success) {
+                  toast.success('新しい年度を作成しました', { id: 'createProject' });
+                  setProjects([...projects, res.project]);
+                  setCurrentProjectId(res.project.id);
+                  setCreateProjectModal({isOpen: false});
+                } else {
+                  toast.error('作成に失敗しました', { id: 'createProject' });
+                }
+              }} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-600 mb-1">年度名（プロジェクト名）</label>
+                  <input name="name" required placeholder="例: 2027年度" className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none font-bold" />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-600 mb-1">コピー元にする年度 (任意)</label>
+                  <select name="copyFromId" defaultValue={currentProjectId} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none font-bold">
+                    <option value="">空白から作成</option>
+                    {projects.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}から行程・タスクをコピー</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-slate-500 mt-2">※コピーされるのは行程表とタスク、設定のみです。タスクの完了状態はリセットされます。名簿や会計は空になります。</p>
+                </div>
+                <div className="flex justify-end pt-4 border-t">
+                  <button type="submit" className="px-5 py-2.5 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors w-full">作成する</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Global Confirm Modal */}
       <AnimatePresence>

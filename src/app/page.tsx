@@ -53,9 +53,24 @@ export default function App() {
   const [scheduleModal, setScheduleModal] = useState<{isOpen: boolean, schedule: ScheduleItem | null, editRoleOnly?: string, mode?: 'activity' | 'role'}>({isOpen: false, schedule: null});
   
   useEffect(() => {
-    fetchData();
     fetchRole();
+    initData();
   }, []);
+
+  const initData = async () => {
+    const p = await getProjects();
+    setProjects(p);
+    const latestId = p.length > 0 ? p[p.length - 1].id : '';
+    setCurrentProjectId(latestId);
+  };
+  
+  useEffect(() => {
+    if (currentProjectId) {
+      fetchData();
+      const interval = setInterval(fetchData, 30000); // 30s polling
+      return () => clearInterval(interval);
+    }
+  }, [currentProjectId]);
 
   const fetchRole = async () => {
     const r: any = await getSessionRole();
